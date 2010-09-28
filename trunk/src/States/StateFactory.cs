@@ -9,6 +9,7 @@ namespace Klotski.States {
 	public enum StateID {
 		Title,	//Title state
 		Game,	//Game state
+        Config, //Config state
 		Story
 	}
 
@@ -42,9 +43,10 @@ namespace Klotski.States {
 		public State CreateState(StateID id, object[] parameters) {
 			//Return state based on ID
 			switch (id) {
-				case StateID.Title:	return new StateTitle();
-				case StateID.Game:	return new StateGame();
-				case StateID.Story:	return new StateStory();
+				case StateID.Title :	 return new StateTitle();
+				case StateID.Game :	     return new StateGame();
+				case StateID.Story :     return new StateStory();
+                case StateID.Config :    return new StateConfig();
 				default:			throw new Exception(Global.UNKNOWNSTATE_ERROR);
 			}
 		}
