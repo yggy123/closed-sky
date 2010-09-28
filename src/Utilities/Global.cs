@@ -24,6 +24,7 @@ namespace Klotski.Utilities {
 
 		//Folder and file
 		public const string FONT_FOLDER = "Fonts/";
+        public const string BOARD_FOLDER = "Boards/";
 		public const string CONTENT_FOLDER = "Content/";
 		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
 		public const string BGM_FOLDER = CONTENT_FOLDER + "Audio/BGM/";
@@ -47,6 +48,12 @@ namespace Klotski.Utilities {
 		public const int				TITLE_MENU_LEFT = 24;
 		public const int				TITLE_MENU_SPACE = 52;
 		public const string				TITLE_MENU_FONT = FONT_FOLDER + "Tahoma";
+
+        //Config::Board
+        public const string BOARD_EXTENSION = ".kmb";
+        public const int    BOARD_LISTMENU_LEFT = 600;
+        public const int    BOARD_LISTMENU_TOP  = 160;
+
 
 		//Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";

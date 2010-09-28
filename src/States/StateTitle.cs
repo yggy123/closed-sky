@@ -65,7 +65,7 @@ namespace Klotski.States {
 
 		private void MenuClick(object sender, EventArgs e) {
 
-			if (((CustomButton)sender).Text == Global.TITLE_MENU[0]) Global.StateManager.GoTo(StateID.Story, null);
+			if (((CustomButton)sender).Text == Global.TITLE_MENU[0]) Global.StateManager.GoTo(StateID.Config, null);
 			if (((CustomButton)sender).Text == Global.TITLE_MENU[3]) m_Active = false;
 		}
 
