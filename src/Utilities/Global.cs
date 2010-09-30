@@ -51,9 +51,31 @@ namespace Klotski.Utilities {
 
         //Config::Board
         public const string BOARD_EXTENSION = ".kmb";
-        public const int    BOARD_LISTMENU_LEFT = 600;
-        public const int    BOARD_LISTMENU_TOP  = 160;
+        public const int    BOARD_LISTMENU_LEFT = 515;
+        public const int    BOARD_LISTMENU_TOP  = 55;
 
+        //Config::HeroButton
+        public static readonly string[] HEROBUTTON_MENU = new string[3] { "Klotski", "BFS", "DFS" };
+        public static readonly string[] HEROBUTTON_INFO = new string[3] {"This is Dummy Text for Klotski"
+                                                                         ,"This is Dummy Text for BFS"
+                                                                         ,"This is Dummy Text for DFS"};
+        public const string             HEROBUTTON_TEXTURE = "Images/HeroButton";
+        public const string             HEROBUTTONOVERLAY_TEXTURE = "Images/HeroButtonOverlay";
+        public const string             HEROBUTTON_FONT = FONT_FOLDER + "Tahoma";
+        public const int                HEROBUTTON_LEFT = 50;
+        public const int                HEROBUTTON_TOP = 50;
+        public const int                HEROBUTTON_SPACE = HEROBUTTON_HEIGHT + 24;
+        public const int                HEROBUTTON_WIDTH = 400;
+        public const int                HEROBUTTON_HEIGHT = 150;
+        public const int                HEROBUTTON_IMAGEWIDTH = 115;
+        public const int                HEROBUTTON_IMAGEHEIGHT = 115;
+
+        //Config::MenuButton
+        public static readonly string[] CONFIG_MENU = new string[2] { "Back", "Go Save The King!" };
+        public const int                CONFIGBUTTON_LEFT = 515;
+        public const int                CONFIGBUTTON_TOP = BOARD_LISTMENU_TOP + 420;
+        public const int                CONFIGBUTTON_SPACE = 40;
+        public const int                CONFIGBUTTON_WIDTH = 228;
 
 		//Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";
