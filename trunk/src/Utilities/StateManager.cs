@@ -22,7 +22,7 @@ namespace Klotski.Utilities {
 		private int					m_Depth;
     	private LinkedList<State>	m_StateList;
 
-        //Class constants;
+    	//Class constants;
 		#region Constants
 		private const string    GUI_SKIN = "Default";
 		private const string    CONTENT_ROOT = "Content";
@@ -202,6 +202,7 @@ namespace Klotski.Utilities {
 			if (m_StateList.Last == null) return;
 
 			//Set state visibility
+			m_StateList.Last.Value.OnEnter();
 			IsMouseVisible = m_StateList.Last.Value.IsCursorVisible();
 			m_StateList.Last.Value.SetVisibility(true);
 
@@ -298,6 +299,7 @@ namespace Klotski.Utilities {
 		protected override void Draw(GameTime time) {
 			//Draws the game
 			Global.GUIManager.Draw(time);
+			m_StateList.Last.Value.Draw(time);
             FlatRedBallServices.Draw();
 			base.Draw(time);
 

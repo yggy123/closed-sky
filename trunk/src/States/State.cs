@@ -92,6 +92,13 @@ namespace Klotski.States {
 			foreach (Control control in m_Panel) control.Visible = visibility;
 		}
 
+		/// <summary>
+		/// State drawing procedure. (Usually not used)
+		/// </summary>
+		/// <param name="time">In-game time data.</param>
+		public virtual void Draw(GameTime time) {}
+
+		//Abstract methods
 		public abstract void Initialize();
 		public abstract void OnEnter();
 		public abstract void Update(GameTime time);

@@ -40,7 +40,7 @@ namespace Klotski.States
         {
             //Create background sprite
             Sprite Background = SpriteManager.AddSprite(
-                Global.IMAGE_FOLDER + "Storm2.png",
+                Global.IMAGE_FOLDER + "Storm2",
                 FlatRedBallServices.GlobalContentManager,
                 m_Layer);
 
@@ -139,6 +139,7 @@ namespace Klotski.States
         private void MenuChoose(object sender, EventArgs e)
         {
             if (sender == m_MenuButtons[0]) m_Active = false;
+            if (sender == m_MenuButtons[1]) Global.StateManager.GoTo(StateID.Game, null, true);
         }
 
         public override void OnEnter()

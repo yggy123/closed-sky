@@ -27,13 +27,13 @@ namespace Klotski.States {
 		public override void Initialize() {
 			//Create background sprite
 			Sprite Background = SpriteManager.AddSprite(
-				Global.IMAGE_FOLDER + "Storm2.png",
+				Global.IMAGE_FOLDER + "Storm2",
 				FlatRedBallServices.GlobalContentManager,
 				m_Layer);
 
 			//Create title sprite
 			Sprite Title = SpriteManager.AddSprite(
-				Global.IMAGE_FOLDER + "Title.png",
+				Global.IMAGE_FOLDER + "Title",
 				FlatRedBallServices.GlobalContentManager,
 				m_Layer);
                        
@@ -63,10 +63,34 @@ namespace Klotski.States {
 			}
 		}
 
+		/// <summary>
+		/// Menu click event handler
+		/// </summary>
+		/// <param name="sender">Who triggers the event?</param>
+		/// <param name="e">The event</param>
 		private void MenuClick(object sender, EventArgs e) {
+            //Prepare parameter
+		    object[] Parameters;
 
-			if (((CustomButton)sender).Text == Global.TITLE_MENU[0]) Global.StateManager.GoTo(StateID.Config, null);
-			if (((CustomButton)sender).Text == Global.TITLE_MENU[3]) m_Active = false;
+            if (sender == m_Buttons[0]) {
+                //Create parameter
+                Parameters      = new object[2];
+                Parameters[0]   = Global.STORY_CAPTION;
+                Parameters[1]   = Global.STORY_TEXT;
+
+                //Go to story
+                Global.StateManager.GoTo(StateID.Story, Parameters);
+            }
+            if (sender == m_Buttons[2]) {
+                //Create parameter
+                Parameters      = new object[2];
+                Parameters[0]   = Global.CREDIT_CAPTION;
+                Parameters[1]   = Global.CREDIT_TEXT;
+
+                //Go to story
+                Global.StateManager.GoTo(StateID.Story, Parameters);
+            }
+            if (sender == m_Buttons[3]) m_Active = false;
 		}
 
 		public override void OnEnter() {
