@@ -23,6 +23,7 @@ namespace Klotski.States
         {
             //Draw cursor
             m_VisibleCursor = true;
+        	m_PopUp = true;
             
             //Nulling value
             m_Label = null;

@@ -18,6 +18,7 @@ namespace Klotski.States {
 	public class StateGame : State {
 		//Members
 		private Sky			m_Sky;
+		private Actor		m_Actor;
 		private List<Ship>	m_Ships;
 
 		private Camera m_ChaseCamera;
@@ -29,6 +30,7 @@ namespace Klotski.States {
 		public StateGame() : base(StateID.Game) {
 			//Empties variables
 			m_Sky = null;
+			m_Actor = null;
 			m_Ships = new List<Ship>();
 			m_BirdsCamera = null;
 			m_ChaseCamera = null;
@@ -49,7 +51,7 @@ namespace Klotski.States {
 			//Set lighting
 			Renderer.LightingEnabled = true;
 			Renderer.Lights.SetDefaultLighting(LightCollection.DefaultLightingSetup.Evening);
-			Renderer.Lights.DirectionalLights[0].Direction = new Vector3(0.6f, -0.8f, 0);
+			Renderer.Lights.DirectionalLights[0].Direction = new Vector3(0.2f, -0.6f, -0.8f);
 
 			//Create sky
 			m_Sky = new Sky(Global.TEXTURE_FOLDER + "Sky", SpriteManager.Camera);
@@ -67,8 +69,11 @@ namespace Klotski.States {
 			S.Initialize(10, -50, 2, 2);
 			m_Ships.Add(S);
 
+			m_Actor = new Actor(m_Layer);
+			m_Actor.Initialize();
+
 			//Set camera position
-			SpriteManager.Camera.Y = 5.0f;
+			SpriteManager.Camera.Y = 0.0f;
 		}
 
 		public override void OnEnter() {
@@ -78,7 +83,15 @@ namespace Klotski.States {
             SpriteManager.Camera.RotationX -= InputManager.Mouse.YChange / 150.0f;
             SpriteManager.Camera.RotationY -= InputManager.Mouse.XChange / 80.0f;
             if (InputManager.Keyboard.KeyPushed(Keys.Escape))
-                Global.StateManager.GoTo(StateID.Title, null);
+                Global.StateManager.GoTo(StateID.Pause, null);
+
+			//
+			foreach (Ship ship in m_Ships) {
+				//If intersecting
+				if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
+			}
+
+			m_Actor.Update(time);
 		}
 
         public override void OnExit() {

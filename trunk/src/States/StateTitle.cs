@@ -79,7 +79,7 @@ namespace Klotski.States {
                 Parameters[1]   = Global.STORY_TEXT;
 
                 //Go to story
-                Global.StateManager.GoTo(StateID.Story, Parameters);
+                Global.StateManager.GoTo(StateID.Story, Parameters, false);
             }
             if (sender == m_Buttons[2]) {
                 //Create parameter
