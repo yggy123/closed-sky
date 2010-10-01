@@ -8,3 +8,7 @@ How to create a project in Visual Studio 2008:
 2. Once you have that, unzip the Klotski.zip in the ref folder.
 3. Use the .sln file as your project.
 4. Delete any existing reference to neoforce then add a reference to NeoForce dll in the lib folder.
+
+For resources:
+Add them via XNA Content.
+For animated model such as boxie, choose Model - Animation Library (or something similar) as processor (there are 2 processor you must change)
