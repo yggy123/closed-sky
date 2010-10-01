@@ -12,6 +12,8 @@ namespace Klotski.States {
 		Config,	//Config state
 		Game,	//Game state
 		Credit	//Credit
+		,
+		Pause
 	}
 
 	/// <summary>
@@ -48,7 +50,8 @@ namespace Klotski.States {
                 case StateID.Story: return new StateStory(parameters[0] as string, parameters[1] as string);
 				case StateID.Config: return new StateConfig();
 				case StateID.Game: return new StateGame();
-                case StateID.Credit: return new StateStory(parameters[0] as string, parameters[1] as string);
+				case StateID.Pause: return new StatePause();
+				case StateID.Credit: return new StateStory(parameters[0] as string, parameters[1] as string);
 				default:			throw new Exception(Global.UNKNOWNSTATE_ERROR);
 			}
 		}

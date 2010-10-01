@@ -25,8 +25,8 @@ namespace Klotski.Utilities {
 
 		//Folder and file
 		public const string FONT_FOLDER = "Fonts/";
-        public const string LEVEL_FOLDER = "Levels/";
-        public const string BOARD_FOLDER = "Boards/";
+		public const string LEVEL_FOLDER = CONTENT_FOLDER + "Levels/";
+		public const string BOARD_FOLDER = "Content/Levels/";
 		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
 		public const string SHADER_FOLDER = "Shaders/";
 		public const string TEXTURE_FOLDER = "Textures/";
@@ -125,7 +125,7 @@ namespace Klotski.Utilities {
 		public const int CONFIGLIST_HEIGHT = 400;
 
         //Config::Board
-        public const string BOARD_EXTENSION = ".kmb";
+        public const string BOARD_EXTENSION = ".sky";
         public const int BOARD_LISTMENU_LEFT = 515;
         public const int BOARD_LISTMENU_TOP = 55;
 
@@ -151,6 +151,22 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_TOP = BOARD_LISTMENU_TOP + 420;
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
+
+		//Pause::MenuButton
+		public static readonly string[] PAUSE_MENU = new string[4] { "Resume", "Restart", "To Title", "Exit" };
+		public const int                PAUSEBUTTON_LEFT = 470;
+		public const int                PAUSEBUTTON_TOP = 230;
+		public const int                PAUSEBUTTON_SPACE = 50;
+		public const int                PAUSEBUTTON_WIDTH = 100;
+
+		//Pause::Help
+		public static readonly string[] LABEL_MENU = new string[6] { "Help", 
+                    "vasdasdweqweqweasdasdasd", 
+                    "12313easdasdasczxc", 
+                    "asdsdasdwfqwqweqweqwe",
+                    "asdasdzczxcvdssfad",
+        "asdasdadasd"};
+
 
 		//Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";
