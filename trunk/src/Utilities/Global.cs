@@ -25,18 +25,18 @@ namespace Klotski.Utilities {
 
 		//Folder and file
 		public const string FONT_FOLDER = "Fonts/";
-		public const string LEVEL_FOLDER = CONTENT_FOLDER + "Levels/";
-		public const string BOARD_FOLDER = "Content/Levels/";
-		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
+		public const string BLOCKS_FOLDER = "Blocks/";
 		public const string SHADER_FOLDER = "Shaders/";
 		public const string TEXTURE_FOLDER = "Textures/";
 		public const string CONTENT_FOLDER = "Content/";
-		public const string MODEL_FOLDER = "Models/";
+		public const string LEVEL_FOLDER = CONTENT_FOLDER + "Levels/";
+		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
+		public const string MODEL_FOLDER = CONTENT_FOLDER + "Models/";
 		public const string BGM_FOLDER = CONTENT_FOLDER + "Audio/BGM/";
 		public const string LEVEL_EXTENSION = ".sky";
 
 		//Sky component
-		public const string SKY_MODEL = MODEL_FOLDER + "Sky";
+		public const string SKY_MODEL = "Models/Sky";
 		public const string SKY_SHADER = SHADER_FOLDER + "Sky";
 		public const string SKYTEX_PARAMETER = "SkyTexture";
 		public const string SKYVIEW_PARAMETER = "View";
@@ -95,9 +95,12 @@ namespace Klotski.Utilities {
         //Credit
         public const string CREDIT_CAPTION = "";
         public const string CREDIT_TEXT =
-            "ORIGINAL DESIGN\r\n" +
+            "ASSIGNMENT FROM\r\n" +
             "ITB IRK Laboratory\r\n" +
-            "\r\n" +
+			"\r\n" +
+			"GAME DIRECTOR\r\n" +
+			"Raka Mahesa\r\n" +
+			"\r\n" +
 	        "GAME DESIGNER\r\n" +
 	        "Karunia Ramadhan\r\n" +
 	        "Raka Mahesa\r\n" +
@@ -107,15 +110,28 @@ namespace Klotski.Utilities {
 	        "Karunia Ramadhan\r\n" +
             "Raka Mahesa\r\n" +
             "\r\n" +
-            "ENGINE PROGRAMMER\r\n" +
-            "Dimas Ciputra\r\n" +
+            "EXTERNAL ENGINE BY\r\n" +
+            "Roof Top Pew Wee\r\n" +
             "Tom Shane\r\n" +
-            "Raka Mahesa\r\n" +
-            "\r\n" +
+			"Firelight Technologies\r\n" +
+			"\r\n" +
+			"2D Artist\r\n" +
+			"Karunia Ramadhan\r\n" +
+			"\r\n" +
+			"3D Artist\r\n" +
+			"Dimas Ciputra\r\n" +
+			"\r\n" +
             "CONTRIBUTOR\r\n" +
             "*lardacil\r\n" +
             "~Raven-Experiment-00\r\n" +
-            "John Williams\r\n" +
+			"John Williams\r\n" +
+			"\r\n" +
+			"SPECIAL THANKS TO\r\n" +
+			"George Lucas\r\n" +
+			"\r\n" +
+			"and\r\n" +
+			"\r\n" +
+			"YOU\r\n" +
 	        "\r\n";
 
 		//State Config
@@ -151,6 +167,23 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_TOP = BOARD_LISTMENU_TOP + 420;
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
+
+		//State game
+		public const float GAMEGAP_WIDTH		= 3.0f;
+		public const float GAMEGAP_HEIGHT		= 3.0f;
+		public const float GAMETILE_WIDTH		= 20.0f + GAMEGAP_WIDTH;
+		public const float GAMETILE_HEIGHT		= 20.0f + GAMEGAP_HEIGHT;
+		public const float GAME_VERTICAL		= -10.0f;
+		public const float GAME_CAMERAHEIGHT	= 500.0f;
+		public const float GAME_GRAVITY			= 140.0f;
+
+		//Actor
+		public const string				ACTOR_MODEL ="Boxie";
+		public const float				ACTOR_VELOCITY = 40.0f;
+		public const float				ACTOR_JUMPING = 60.0f;
+		public const float				ACTORCAM_DISTANCE = 20.0f;
+		public const float				ACTORCAM_HEIGHT = 10.0f;
+		public static readonly string[] ACTOR_ANIMATIONS = { "Idle", "Walking", "Jumping", "Landing" };
 
 		//Pause::MenuButton
 		public static readonly string[] PAUSE_MENU = new string[4] { "Resume", "Restart", "To Title", "Exit" };

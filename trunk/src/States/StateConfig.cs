@@ -84,7 +84,7 @@ namespace Klotski.States
 
             //Fill ListBox with GameBoard file list
             List<string> m_TempList = null;
-            m_TempList = FileManager.GetAllFilesInDirectory(Global.BOARD_FOLDER, Global.BOARD_EXTENSION, 0);
+            m_TempList = FileManager.GetAllFilesInDirectory(Global.LEVEL_FOLDER, Global.BOARD_EXTENSION, 0);
 
             //Remove Extension and Path 
             for (int i = 0; i < m_TempList.Count; ++i)
