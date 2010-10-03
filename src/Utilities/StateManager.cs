@@ -128,7 +128,6 @@ namespace Klotski.Utilities {
 			else {
 				//Create new state
 				State NewState = StateFactory.Instance().CreateState(id, parameters);
-				
 
 				//If not swap, add it on the last
 				if (!swap) AddState(NewState);
@@ -142,6 +141,14 @@ namespace Klotski.Utilities {
 					Global.Logger.AddLine(NewState + " has been added to the state list.");
 				}
 			}
+		}
+
+		/// <summary>
+		/// Quit the game by removing all existing state.
+		/// </summary>
+		public void Quit() {
+			//Set depth as many as the number of state
+			m_Depth = m_StateList.Count;
 		}
 
 		/// <summary>
@@ -188,7 +195,7 @@ namespace Klotski.Utilities {
 			LinkedListNode<State> Current = m_StateList.Last;
 			while (Current != null && Current.Value != state) {
 				//Increase depth and go to next
-				Current = Current.Next;
+				Current = Current.Previous;
 				m_Depth++;
 			}
 		}
@@ -299,7 +306,6 @@ namespace Klotski.Utilities {
 		protected override void Draw(GameTime time) {
 			//Draws the game
 			Global.GUIManager.Draw(time);
-			m_StateList.Last.Value.Draw(time);
             FlatRedBallServices.Draw();
 			base.Draw(time);
 

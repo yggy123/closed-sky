@@ -32,8 +32,6 @@ namespace Klotski.States
 
         public override void Initialize()
         {
-          
-
             #region Initialize Window
             //Create Window
             window = new Window(Global.GUIManager);
@@ -99,13 +97,13 @@ namespace Klotski.States
             if (sender == m_PauseButtons[0]) m_Active=false;
 
             //Restart Button
-            if (sender == m_PauseButtons[1]) ;
+            //if (sender == m_PauseButtons[1]) ;
 
             //To title Button
             if (sender == m_PauseButtons[2]) Global.StateManager.GoTo(StateID.Title, null);
 
             //Exit Button
-            if (sender == m_PauseButtons[3]) Global.StateManager.Exit();
+            if (sender == m_PauseButtons[3]) Global.StateManager.Quit();
         }
 
          public override void OnEnter()
@@ -117,22 +115,3 @@ namespace Klotski.States
          }
     }
 }
-
-/*di global aku tambahi
-
-        //Pause::MenuButton
-        public static readonly string[] PAUSE_MENU = new string[4] { "Resume" , "Restart", "To Title", "Exit" };
-        public const int                PAUSEBUTTON_LEFT = 470;
-        public const int                PAUSEBUTTON_TOP = 230;
-        public const int                PAUSEBUTTON_SPACE = 50;
-        public const int                PAUSEBUTTON_WIDTH = 100;
-       
-        //Pause::Help
-        public static readonly string[] LABEL_MENU = new string[6] { "Help", 
-                    "vasdasdweqweqweasdasdasd", 
-                    "12313easdasdasczxc", 
-                    "asdsdasdwfqwqweqweqwe",
-                    "asdasdzczxcvdssfad",
-        "asdasdadasd"};
-
-*/
