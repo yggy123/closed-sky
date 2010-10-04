@@ -48,7 +48,7 @@ namespace Klotski.Components {
 			Initialize(Global.ACTOR_MODEL, true, x, y, z);
 
 			//Set model animation
-			m_Model.CurrentAnimation = Global.ACTOR_ANIMATIONS[0];
+			m_Model.CurrentAnimation = Global.ACTOR_ANIMATIONS[1];
 			m_Camera.X = 0;
 			m_Camera.Z = 0;
 
@@ -56,6 +56,10 @@ namespace Klotski.Components {
 			m_Camera.RotationX = 0;
 			m_Camera.RotationY = (float)Math.PI;
 			m_Camera.RotationZ = 0;
+		}
+
+		public void SetPosition(float x, float y, float z) {
+			m_Model.Position = new Vector3(x, y, z);
 		}
 
 		/// <summary>
@@ -112,7 +116,7 @@ namespace Klotski.Components {
 
 			//Jump with space
 			if (InputManager.Keyboard.KeyDown(Keys.Space) && !m_Jumping) {
-				m_Model.CurrentAnimation = "Waving";
+				m_Model.CurrentAnimation = "Jumping";
 
 				m_Model.YVelocity = Global.ACTOR_JUMPING;
 				m_Model.YAcceleration = -Global.GAME_GRAVITY;
@@ -127,7 +131,7 @@ namespace Klotski.Components {
 				m_Model.YVelocity = 0.0f;
 				m_Model.YAcceleration = 0.0f;
 				m_Jumping = false;
-				m_Model.CurrentAnimation = "Idle";
+				m_Model.CurrentAnimation = "Walking";
 
 				//Place it
 				m_Model.Y = ship.GetBoundingBox().Max.Y;
