@@ -32,6 +32,8 @@ namespace Klotski.States {
 		//Cameras
 		private Camera m_ActiveCamera;
 		private Camera m_BirdsView;
+
+		private bool m_ReadyToUpdate;
  
 		/// <summary>
 		/// Class constructor.
@@ -42,8 +44,10 @@ namespace Klotski.States {
 			m_Actor = null;
 			m_Ships = new List<Ship>();
 			m_BirdsView = null;
+			m_ActiveCamera = null;
 			m_Board = null;
 			m_Controlled = null;
+			m_ReadyToUpdate = false;
 		}
 
 		/// <summary>
@@ -68,12 +72,15 @@ namespace Klotski.States {
 			//Create ships
 			Ship S = new Ship(m_Layer, 0, 0, 1, 1);
 			m_Ships.Add(S);
-			m_ActiveCamera = S.GetCamera();
-
-			S = new Ship(m_Layer, 2, 0, 1, 1);
+			S = new Ship(m_Layer, 1, 0, 1, 2);
 			m_Ships.Add(S);
-
-			S = new Ship(m_Layer, 1, 1, 1, 1);
+			S = new Ship(m_Layer, 1, 1, 2, 2);
+			m_Ships.Add(S);
+			S = new Ship(m_Layer, 0, 1, 2, 1);
+			m_Ships.Add(S);
+			S = new Ship(m_Layer, 1, 3, 1, 1);
+			m_Ships.Add(S);
+			S = new Ship(m_Layer, 3, 0, 2, 1);
 			m_Ships.Add(S);
 
 			//Initialize them
@@ -81,15 +88,13 @@ namespace Klotski.States {
 
 			//Create the board
 			CreateBoard();
+		    UpdateBoard();
+			CreateBirdsView();
 
 			m_Actor = new Actor(m_Layer);
 			m_Actor.Initialize(10, -10, 10);
 			m_Controlled = m_Actor;
 			m_ActiveCamera = m_Controlled.GetCamera();
-			CreateBirdsView();
-
-			//Set camera position
-	//		SpriteManager.Camera.Y = 0.0f;
 		}
 
 		private void CreateLighting() {
@@ -120,14 +125,16 @@ namespace Klotski.States {
 
 		private void SwitchCamera() {
 			//Switch between birdview and controlled camera
-			if (SpriteManager.Camera.Equals(m_BirdsView))	m_Active = false;//m_ActiveCamera = m_Controlled.GetCamera();
-			else											m_ActiveCamera = m_BirdsView;
+			if (m_ActiveCamera == m_BirdsView)	m_ActiveCamera = m_Controlled.GetCamera();
+			else								m_ActiveCamera = m_BirdsView;
 		}
 
 		/// <summary>
 		/// Updates drawing camera to follow active camera.
 		/// </summary>
 		private void UpdateCamera() {
+            //
+
 			//Copy position and orentation
 			SpriteManager.Camera.Position		= m_ActiveCamera.Position;
 			SpriteManager.Camera.RotationMatrix = m_ActiveCamera.RotationMatrix;
@@ -159,16 +166,70 @@ namespace Klotski.States {
 				int Y		= ship.GetRow();
 
 				//Ensure ship's space is empty
-				for (int x = X; x < ship.GetWidth(); x++) for (int y = Y; y < ship.GetHeight(); y++)
+				for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
 					if (m_Board[x, y] != null) Empty = false;
 
 				//Place the ship if empty
 				if (Empty) {
-					for (int x = X; x < ship.GetWidth(); x++) for (int y = Y; y < ship.GetHeight(); y++)
+					for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
 						m_Board[x, y] = ship;
 				}
 			}
 		}
+
+        private void UpdateBoard() {
+			//Skip if board doesn't exist
+			if (m_Board == null) return;
+
+            //For each ship
+            foreach (Ship ship in m_Ships) {
+                //Reset movement
+                ship.ResetMovement();
+
+				//Check each direction
+				#region Movement availability checking
+				//Is ship on top row?
+                bool Available = (ship.GetRow() + ship.GetHeight()) < m_Board.GetLength(1);
+
+                //Check against other ship if not on top row
+                if (Available) {
+					for (int x = ship.GetColumn(); x < ship.GetColumn() + ship.GetWidth(); x++)
+						if (m_Board[x, ship.GetRow() + ship.GetHeight()] != null) Available = false;
+                	if (Available) { ship.AddMovement(Ship.Direction.PositiveY); }
+				}
+				
+				//Is ship on bottom row?
+				Available = ship.GetRow() > 0;
+
+				//Check against other ship if not on bottom row
+				if (Available) {
+					for (int x = ship.GetColumn(); x < ship.GetColumn() + ship.GetWidth(); x++)
+						if (m_Board[x, ship.GetRow() - 1] != null) Available = false;
+					if (Available) { ship.AddMovement(Ship.Direction.NegativeY); }
+				}
+
+				//Is ship on left most row?
+				Available = (ship.GetColumn() + ship.GetWidth()) < m_Board.GetLength(0);
+
+				//Check against other ship if not on bottom row
+				if (Available) {
+					for (int y = ship.GetRow(); y < ship.GetRow() + ship.GetHeight(); y++)
+						if (m_Board[ship.GetColumn() + ship.GetWidth(), y] != null) Available = false;
+					if (Available) { ship.AddMovement(Ship.Direction.PositiveX); }
+				}
+
+				//Is ship on right most row?
+				Available = ship.GetColumn() > 0;
+
+				//Check against other ship if not on bottom row
+				if (Available) {
+					for (int y = ship.GetRow(); y < ship.GetRow() + ship.GetHeight(); y++)
+						if (m_Board[ship.GetColumn() - 1, y] != null) Available = false;
+					if (Available) { ship.AddMovement(Ship.Direction.NegativeX); }
+				}
+				#endregion
+			}
+        }
 
 		private Ship GetShipBelowActor() {
 			//Set default value
@@ -188,11 +249,8 @@ namespace Klotski.States {
 		}
 
 		public override void Update(GameTime time) {
-			if (InputManager.Keyboard.KeyPushed(Keys.Tab)) {
-				//SwitchCamera();
-			}
-            if (InputManager.Keyboard.KeyPushed(Keys.Escape))
-                Global.StateManager.GoTo(StateID.Pause, null);
+			if (InputManager.Keyboard.KeyPushed(Keys.Escape)) Global.StateManager.GoTo(StateID.Pause, null);
+			if (InputManager.Keyboard.KeyPushed(Keys.LeftShift)) SwitchCamera();
 
 			//
 			foreach (Ship ship in m_Ships) {
@@ -200,18 +258,56 @@ namespace Klotski.States {
 				if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
 			}
 
-			//If mouse is clicked
-			if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
-				//Get the ship below
-				Ship Below = GetShipBelowActor();
-				if (Below != null) {
-					//Change active player
-					m_Actor.SetVisibility(false);
-				} else m_Actor.SetVisibility(true);
+			//If controlled ship is moving
+			if (m_Controlled is Ship) {
+				if ((m_Controlled as Ship).IsMoving()) m_ReadyToUpdate = true;
+				else if (m_ReadyToUpdate) {
+					//Update board
+					CreateBoard();
+					UpdateBoard();
+
+					//
+					m_ReadyToUpdate = false;
+				}
 			}
 
-			m_Actor.UpdateControl(time);
-			m_Actor.Update(time);
+			//If mouse is clicked
+			if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && !m_ReadyToUpdate) {
+				//Check
+				if (m_Controlled != m_Actor) {
+					//Place actor on top of the ship
+					m_Actor.SetPosition(
+						(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
+						m_Controlled.GetBoundingBox().Max.Y,
+						(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
+
+					//Return control to actor
+					m_Actor.SetVisibility(true);
+					m_Controlled = m_Actor;
+				} else {
+					//Get the ship below actor
+					Ship Below = GetShipBelowActor();
+
+					//If a ship exist
+					if (Below != null) {
+						//Set as controlled
+						m_Controlled = Below;
+
+						//Turn off actor
+						m_Actor.SetVisibility(false);
+					}
+				}
+			}
+
+            //If camera is not bird view
+            if (m_ActiveCamera != m_BirdsView) {
+                //Set active camera
+                m_ActiveCamera = m_Controlled.GetCamera();
+
+                //Update controlled
+                m_Controlled.UpdateControl(time);
+                m_Controlled.Update(time);
+            }
 			UpdateCamera();
 		}
 

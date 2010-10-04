@@ -169,21 +169,25 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_WIDTH = 228;
 
 		//State game
-		public const float GAMEGAP_WIDTH		= 3.0f;
-		public const float GAMEGAP_HEIGHT		= 3.0f;
-		public const float GAMETILE_WIDTH		= 20.0f + GAMEGAP_WIDTH;
-		public const float GAMETILE_HEIGHT		= 20.0f + GAMEGAP_HEIGHT;
+		public const float GAMEGAP_WIDTH		= 10.0f;
+		public const float GAMEGAP_HEIGHT		= 10.0f;
+		public const float GAMETILE_WIDTH		= 40.0f;
+		public const float GAMETILE_HEIGHT		= 40.0f;
 		public const float GAME_VERTICAL		= -10.0f;
 		public const float GAME_CAMERAHEIGHT	= 500.0f;
 		public const float GAME_GRAVITY			= 140.0f;
 
 		//Actor
-		public const string				ACTOR_MODEL ="Boxie";
+		public const string				ACTOR_MODEL = "Vincent";
 		public const float				ACTOR_VELOCITY = 40.0f;
 		public const float				ACTOR_JUMPING = 60.0f;
 		public const float				ACTORCAM_DISTANCE = 20.0f;
 		public const float				ACTORCAM_HEIGHT = 10.0f;
 		public static readonly string[] ACTOR_ANIMATIONS = { "Idle", "Walking", "Jumping", "Landing" };
+        
+        //Ship
+	    public const float SHIPCAM_HEIGHT = 10.0f;
+	    public const float SHIPCAM_DISTANCE = 50.0f;
 
 		//Pause::MenuButton
 		public static readonly string[] PAUSE_MENU = new string[4] { "Resume", "Restart", "To Title", "Exit" };
@@ -200,8 +204,7 @@ namespace Klotski.Utilities {
                     "asdasdzczxcvdssfad",
         "asdasdadasd"};
 
-
-		//Error & Exceptions
+	    //Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";
 		public const string UNKNOWNSTATE_ERROR	= "ERROR: Unidentified state ID is used.";
 		public const string FMODVERSION_ERROR	= "ERROR: Newer version of FMOD is required.";

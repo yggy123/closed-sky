@@ -1,8 +1,13 @@
 ﻿
 //Namespace used
+using System;
+using System.Collections.Generic;
+using FlatRedBall;
 using Klotski.Utilities;
+using FlatRedBall.Input;
 using FlatRedBall.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 //Class namespace
 namespace Klotski.Components {
@@ -10,11 +15,26 @@ namespace Klotski.Components {
 	/// Ship class, a block in klotski puzzle.
 	/// </summary>
 	public class Ship : Playable {
+        //Enumeration
+        public enum Direction {
+            PositiveX,
+            NegativeX,
+            PositiveY,
+            NegativeY,
+			None
+        }
+
 		//Data
 		protected int m_Row;
 		protected int m_Column;
 		protected int m_Width;
 		protected int m_Height;
+
+		//Movement
+		protected float				m_MoveTime;
+		protected Vector3           m_Forward;
+		protected Direction			m_Movement;
+	    protected List<Direction> m_Available;
 
 		/// <summary>
 		/// 
@@ -30,6 +50,12 @@ namespace Klotski.Components {
 			m_Column	= column;
 			m_Width		= width;
 			m_Height	= height;
+
+            //Initialize variable
+			m_MoveTime	= 0.0f;
+            m_Forward   = Vector3.Zero;
+            m_Movement	= Direction.None;
+            m_Available = new List<Direction>();
 		}
 
         public void Initialize() {
@@ -37,15 +63,25 @@ namespace Klotski.Components {
         	string model = Global.BLOCKS_FOLDER + "Balloon" + m_Width + m_Height;
 
 			//Calculate position via row and column
-			float X = (m_Column + 0.5f)	* (Global.GAMETILE_WIDTH  + Global.GAMEGAP_WIDTH);
-			float Y = (m_Row	+ 0.5f)	* (Global.GAMETILE_HEIGHT + Global.GAMEGAP_HEIGHT);
+			float X = Global.GAMEGAP_WIDTH  + (((Global.GAMEGAP_WIDTH * 2)  + Global.GAMETILE_WIDTH)  * m_Column);
+			float Y = Global.GAMEGAP_HEIGHT + (((Global.GAMEGAP_HEIGHT * 2) + Global.GAMETILE_HEIGHT) * m_Row);
 
 			//Initialize
 			Initialize(model, false, X, Global.GAME_VERTICAL, Y);
 
-			System.Console.WriteLine("Min " + m_AABB.Min + " max " + m_AABB.Max);
-			System.Console.WriteLine("Min2 " + GetBoundingBox().Min + " max2 " + GetBoundingBox().Max);
+			//Calculate forward vector
+            m_Forward	= (m_Width > m_Height) ? new Vector3(1.0f, 0.0f, 0.0f) : new Vector3(0.0f, 0.0f, 1.0f);
+
+            //Create camera
+            m_Camera            = new Camera(FlatRedBallServices.GlobalContentManager);
+            m_Camera.RotationX  = 0.0f;
+            m_Camera.RotationY = (float) ((m_Width > m_Height) ? (Math.PI * 1.5f) : Math.PI);
+            m_Camera.RotationZ  = 0.0f;
         }
+
+		public bool IsMoving() {
+			return (m_Movement != Direction.None);
+		}
 
 		/// <summary>
 		/// Ships row accessor.
@@ -79,12 +115,99 @@ namespace Klotski.Components {
 			return m_Height;
 		}
 
-		public override void Update(GameTime time) {
-			//
-		}
+        public List<Direction> GetAvailableMovement()
+        {
+            return m_Available;
+        }
+
+        public void ResetMovement()
+        {
+            m_Available.Clear();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="direction"></param>
+        public void AddMovement(Direction direction) {
+			//Do nothing if there's no direction
+			if (direction == Direction.None) return;
+
+            //Check whether direction has existed or no
+            bool Contain = false;
+            foreach (Direction dir in m_Available) if (dir.Equals(direction)) Contain = true;
+
+            //Add direction if doesn't exist yet
+            if (!Contain) m_Available.Add(direction);
+        }
 
 		public override void UpdateControl(GameTime time) {
-			//
+			//Don't receive input if still moving
+			if (IsMoving()) return;
+
+			//Initialize direction
+			Direction Move = Direction.None;
+
+			//Set movement based on input
+			if (InputManager.Keyboard.KeyDown(Keys.W)) Move = m_Forward.X > 0 ? Direction.PositiveX : Direction.PositiveY;
+			else if (InputManager.Keyboard.KeyDown(Keys.S)) Move = m_Forward.X > 0 ? Direction.NegativeX : Direction.NegativeY;
+			else if (InputManager.Keyboard.KeyDown(Keys.D)) Move = m_Forward.X > 0 ? Direction.PositiveY : Direction.NegativeX;
+			else if (InputManager.Keyboard.KeyDown(Keys.A)) Move = m_Forward.X > 0 ? Direction.NegativeY : Direction.PositiveX;
+
+			//Validate movement
+			if (m_Available.Contains(Move)) m_Movement = Move;
+		}
+
+		public override void Update(GameTime time) {
+			//If moving
+			if (m_Movement != Direction.None) {
+				//Calculate time difference
+				float Difference  = time.ElapsedGameTime.Milliseconds / 1000.0f;
+				m_MoveTime		 += Difference;
+
+				//Set movement direction on movement
+				switch (m_Movement) {
+				case Direction.PositiveX:
+					m_Model.Position.X += (Global.GAMETILE_WIDTH + (Global.GAMEGAP_WIDTH * 2)) * Difference;
+					break;
+				case Direction.NegativeX:
+					m_Model.Position.X -= (Global.GAMETILE_WIDTH + (Global.GAMEGAP_WIDTH * 2)) * Difference;
+					break;
+				case Direction.PositiveY:
+					m_Model.Position.Z += (Global.GAMETILE_HEIGHT + (Global.GAMEGAP_HEIGHT * 2)) * Difference;
+					break;
+				case Direction.NegativeY:
+					m_Model.Position.Z -= (Global.GAMETILE_HEIGHT + (Global.GAMEGAP_HEIGHT * 2)) * Difference;
+					break;
+				}
+
+				//If has reached limit
+				if (m_MoveTime >= 1.0f) {
+					//Change row and collumn
+					switch (m_Movement) {
+					case Direction.PositiveX: { m_Column++; break; }
+					case Direction.NegativeX: { m_Column--; break; }
+					case Direction.PositiveY: { m_Row++;	break; }
+					case Direction.NegativeY: { m_Row--;	break; }
+					}
+
+					//Place ship on the right place
+					m_Model.X = Global.GAMEGAP_WIDTH  + (((Global.GAMEGAP_WIDTH * 2)  + Global.GAMETILE_WIDTH)  * m_Column);
+					m_Model.Z = Global.GAMEGAP_HEIGHT + (((Global.GAMEGAP_HEIGHT * 2) + Global.GAMETILE_HEIGHT) * m_Row);
+
+					//Reset
+					m_Movement = Direction.None;
+					m_MoveTime = 0;
+				}
+			}
+
+			//Position camera behind the model
+            m_Camera.Position = m_Model.Position - 
+                (m_Forward * Global.SHIPCAM_DISTANCE) +
+                new Vector3(
+                    (m_Width > m_Height) ? 0.0f : (m_AABB.Max.X - m_AABB.Min.X) / 2.0f,
+                    Global.SHIPCAM_HEIGHT,
+                    (m_Width > m_Height) ? (m_AABB.Max.Z - m_AABB.Min.Z) / 2.0f : 0.0f);
 		}
 	}
 }
