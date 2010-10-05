@@ -2,9 +2,9 @@
 //Namespaces used
 using FlatRedBall;
 using FlatRedBall.Graphics;
+using FlatRedBall.Graphics.Model;
 using Klotski.Utilities;
 using Microsoft.Xna.Framework;
-using FlatRedBall.Graphics.Model;
 using System.Collections.Generic;
 using TomShane.Neoforce.Controls;
 
@@ -21,8 +21,8 @@ namespace Klotski.States {
 		protected bool		m_VisibleCursor;
 
 		//Containers
-		protected List<Control>					m_Panel;
-		protected FlatRedBall.Graphics.Layer	m_Layer;
+		protected List<Control>	m_Panel;
+		protected Layer			m_Layer;
 
 		/// <summary>
 		/// Class constructor.
@@ -47,7 +47,10 @@ namespace Klotski.States {
 		/// </summary>
 		public virtual void OnExit() {
 			//Removes all GUI
-			foreach (Control control in m_Panel) Global.GUIManager.Remove(control);
+			foreach (Control control in m_Panel) {
+				control.Enabled = false;
+				Global.GUIManager.Remove(control);
+			}
 
 			//Removes FRB entities
 			foreach (Text text in m_Layer.Texts)				TextManager.RemoveText(text);

@@ -1,12 +1,14 @@
 ﻿
 //Namespaces used
+using System;
 using FlatRedBall;
+using FlatRedBall.IO;
 using Klotski.Controls;
 using Klotski.Utilities;
+using Klotski.States.Game;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
 using System.Collections.Generic;
-using FlatRedBall.IO;
 
 //Application namespace
 namespace Klotski.States
@@ -120,9 +122,14 @@ namespace Klotski.States
             }
             #endregion
 
+			//Set default selection
+			m_FileListBox.ItemIndex			= 0;
+			m_FileListBox.Focused			= true;
+        	m_HeroButtons[0].m_Highlight	= true;
+
         }
 
-        private void HeroChoose(object sender, EventArgs e)
+		private void HeroChoose(object sender, TomShane.Neoforce.Controls.EventArgs e)
         {
             foreach (HeroButton h in m_HeroButtons) {
                 h.m_Highlight = false;
@@ -136,18 +143,39 @@ namespace Klotski.States
             }
         }
 
-        private void MenuChoose(object sender, EventArgs e)
-        {
+		private void MenuChoose(object sender, TomShane.Neoforce.Controls.EventArgs e) {
+        	//If back, destroy state
             if (sender == m_MenuButtons[0]) m_Active = false;
-            if (sender == m_MenuButtons[1]) Global.StateManager.GoTo(StateID.Game, null, true);
+
+			//If save the king
+			if (sender == m_MenuButtons[1]) {
+				//Create parameter
+				Object[] Parameters = new object[2];
+				Parameters[0]		= StateGame.Player.Klotski;
+				Parameters[1]		= new GameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
+
+				GameData Data = new GameData();
+				Data.AddShip(0, 0, 1, 1);
+				Data.AddShip(0, 3, 1, 1);
+				Data.AddShip(1, 0, 1, 2);
+				Data.AddShip(1, 1, 1, 1);
+				Data.AddShip(1, 2, 1, 1);
+				Data.AddShip(1, 3, 1, 2);
+				Data.AddShip(2, 1, 2, 1);
+				Data.AddShip(3, 0, 1, 2);
+				Data.AddShip(3, 3, 1, 2);
+				Data.AddShip(3, 1, 2, 2);
+				Parameters[1] = Data;
+
+				//Go to play state
+            	Global.StateManager.GoTo(StateID.Game, Parameters, true);
+            }
         }
 
-        public override void OnEnter()
-        {
+        public override void OnEnter() {
         }
 
-        public override void Update(GameTime time)
-        {
+        public override void Update(GameTime time) {
         }
     }
 }

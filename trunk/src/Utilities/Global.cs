@@ -22,6 +22,12 @@ namespace Klotski.Utilities {
 		public const string		APP_NAME = "Klotski";
 		public const StateID	APP_STATE = StateID.Title;
 		public const object[]	APP_PARAMETERS = null;
+		public const float		APPCAM_DEFAULTX = 0.0f;
+		public const float		APPCAM_DEFAULTY = 0.0f;
+		public const float		APPCAM_DEFAULTZ = 40.0f;
+		public const float		APPCAM_DEFAULTROTX = 0.0f;
+		public const float		APPCAM_DEFAULTROTY = 0.0f;
+		public const float		APPCAM_DEFAULTROTZ = 0.0f;
 
 		//Folder and file
 		public const string FONT_FOLDER = "Fonts/";

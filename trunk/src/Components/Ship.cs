@@ -72,11 +72,13 @@ namespace Klotski.Components {
 			//Calculate forward vector
             m_Forward	= (m_Width > m_Height) ? new Vector3(1.0f, 0.0f, 0.0f) : new Vector3(0.0f, 0.0f, 1.0f);
 
-            //Create camera
-            m_Camera            = new Camera(FlatRedBallServices.GlobalContentManager);
+            //Configures camera
             m_Camera.RotationX  = 0.0f;
             m_Camera.RotationY = (float) ((m_Width > m_Height) ? (Math.PI * 1.5f) : Math.PI);
-            m_Camera.RotationZ  = 0.0f;
+			m_Camera.RotationZ = 0.0f;
+
+			//Logging
+			if (Global.Logger != null) Global.Logger.AddLine("Ship created.");
         }
 
 		public bool IsMoving() {
