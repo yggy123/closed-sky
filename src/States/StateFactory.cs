@@ -46,11 +46,11 @@ namespace Klotski.States {
 		public State CreateState(StateID id, object[] parameters) {
 			//Return state based on ID
 			switch (id) {
-				case StateID.Title:	return new StateTitle();
-                case StateID.Story: return new StateStory(parameters[0] as string, parameters[1] as string);
+				case StateID.Title:	 return new StateTitle();
+                case StateID.Story:  return new StateStory(parameters[0] as string, parameters[1] as string);
 				case StateID.Config: return new StateConfig();
-				case StateID.Game: return new StateGame();
-				case StateID.Pause: return new StatePause();
+				case StateID.Game:	 return new StateGame((StateGame.Player)parameters[0], parameters[1] as Game.GameData);
+				case StateID.Pause:  return new StatePause();
 				case StateID.Credit: return new StateStory(parameters[0] as string, parameters[1] as string);
 				default:			throw new Exception(Global.UNKNOWNSTATE_ERROR);
 			}

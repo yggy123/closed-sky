@@ -7,6 +7,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Lighting;
 using Klotski.Utilities;
 using Klotski.Components;
+using Klotski.States.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -15,92 +16,175 @@ using Mouse = FlatRedBall.Input.Mouse;
 //Class namespace
 namespace Klotski.States {
 	/// <summary>
-	/// Class description.
+	/// The state that handles main gameplay.
 	/// </summary>
 	public class StateGame : State {
-		//Members
-		private Sky			m_Sky;
-		private Actor		m_Actor;
-		private List<Ship>	m_Ships;
-		private Layer		m_SkyLayer;
+		//Enumeration
+		public enum Player {
+			Klotski,	//Human player
+			DFS,		//AI using DFS method
+			BFS,		//AI using BFS method
+			Storm		//Map creation.
+		}
 
-		private Playable m_Controlled;
-
-		//
-		private Ship[,] m_Board;
+		//Sky component
+		private Sky		m_Sky;
+		private Layer	m_SkyLayer;
 
 		//Cameras
 		private Camera m_ActiveCamera;
 		private Camera m_BirdsView;
 
-		private bool m_ReadyToUpdate;
+		//Playable components
+		private Actor				m_Actor;
+		private List<Ship>			m_Ships;
+		private Playable			m_Controlled;
+		private readonly GameData	m_Data;
+
+		//Logics
+		private Player	m_Player;
+		private Ship[,] m_Board;
+		private bool	m_ReadyToUpdate;
+
  
 		/// <summary>
-		/// Class constructor.
+		/// State Game class constructor.
 		/// </summary>
-		public StateGame() : base(StateID.Game) {
+		public StateGame(Player player, GameData data) : base(StateID.Game) {
+			//Initialize variable
+			m_Data			= data;
+			m_Player		= player;
+			m_ReadyToUpdate	= false;
+
 			//Empties variables
-			m_Sky = null;
-			m_Actor = null;
-			m_Ships = new List<Ship>();
-			m_BirdsView = null;
-			m_ActiveCamera = null;
-			m_Board = null;
-			m_Controlled = null;
-			m_ReadyToUpdate = false;
+			m_Sky			= null;
+			m_Actor			= null;
+			m_Ships			= null;
+			m_Board			= null;
+			m_SkyLayer		= null;
+			m_BirdsView		= null;
+			m_ActiveCamera	= null;
+			m_Controlled	= null;
 		}
 
 		/// <summary>
-		/// Initialize the game
+		/// Initialize the game.
 		/// </summary>
+		/// <note>DO NOT CHANGE INITIALIZATION ORDER</note>
 		public override void Initialize() {
-			//Set lighting
-			Renderer.LightingEnabled = true;
-			Renderer.Lights.SetDefaultLighting(LightCollection.DefaultLightingSetup.Evening);
-			Renderer.Lights.DirectionalLights[0].Direction = new Vector3(0.2f, -0.6f, -0.8f);
+			//Initialize environment
+			CreateSky();
+			CreateLighting();
 
-			//
+			//Load ships
+			m_Ships = m_Data.LoadShipList(m_Layer);
+			foreach (Ship ship in m_Ships) ship.Initialize();
+
+			//Create the board
+			CreateBoard();
+			UpdateBoard();
+
+			//Create camera
+			CreateBirdsView();
+
+			//Create and initialize actor
+			m_Actor			= new Actor(m_Layer);
+			m_Controlled	= m_Actor;
+			m_ActiveCamera	= m_Controlled.GetCamera();
+			m_Actor.Initialize(10, -10, 10);
+		}
+
+		/// <summary>
+		/// What happened upon entering the state.
+		/// </summary>
+		public override void OnEnter() { }
+
+		/// <summary>
+		/// What happens when the state got removed.
+		/// </summary>
+		public override void OnExit() {
+			base.OnExit();
+
+			//Reset camera
+			SpriteManager.Camera.X = Global.APPCAM_DEFAULTX;
+			SpriteManager.Camera.Y = Global.APPCAM_DEFAULTY;
+			SpriteManager.Camera.Z = Global.APPCAM_DEFAULTZ;
+			SpriteManager.Camera.RotationX = Global.APPCAM_DEFAULTROTX;
+			SpriteManager.Camera.RotationY = Global.APPCAM_DEFAULTROTY;
+			SpriteManager.Camera.RotationZ = Global.APPCAM_DEFAULTROTZ;
+
+			//Remove sky
+			SpriteManager.RemoveDrawableBatch(m_Sky);
+			SpriteManager.RemoveLayer(m_SkyLayer);
+		}
+
+		//Initialization procedures
+		#region Initialize Stuff
+		/// <summary>
+		/// Create array of board from the list of ships.
+		/// </summary>
+		private void CreateBoard() {
+			//Get board size
+			int MaxRow		= 1;
+			int MaxColumn	= 1;
+			foreach (Ship ship in m_Ships) {
+				MaxRow = Math.Max(MaxRow, ship.GetRow() + ship.GetHeight());
+				MaxColumn = Math.Max(MaxColumn, ship.GetColumn() + ship.GetWidth());
+			}
+
+			//Create board
+			m_Board = new Ship[MaxColumn, MaxRow];
+			for (int x = 0; x < MaxColumn; x++) for (int y = 0; y < MaxRow; y++) m_Board[x, y] = null;
+
+			//For each ship
+			foreach (Ship ship in m_Ships) {
+				//Get variable
+				bool Empty	= true;
+				int X		= ship.GetColumn();
+				int Y		= ship.GetRow();
+
+				//Ensure ship's space is empty
+				for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
+						if (m_Board[x, y] != null) Empty = false;
+
+				//Place the ship if empty
+				if (Empty) {
+					for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
+							m_Board[x, y] = ship;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Creates a skysphere
+		/// </summary>
+		private void CreateSky() {
+			//Add a sky layer under main layer
 			Layer Temp	= SpriteManager.AddLayer();
-			m_SkyLayer	= m_Layer;
-			m_Layer		= Temp;
+			m_SkyLayer = m_Layer;
+			m_Layer = Temp;
 
 			//Create sky
 			m_Sky = new Sky(Global.TEXTURE_FOLDER + "Sky");
 			SpriteManager.AddDrawableBatch(m_Sky);
 			SpriteManager.AddToLayer(m_Sky, m_SkyLayer);
-
-			//Create ships
-			Ship S = new Ship(m_Layer, 0, 0, 1, 1);
-			m_Ships.Add(S);
-			S = new Ship(m_Layer, 1, 0, 1, 2);
-			m_Ships.Add(S);
-			S = new Ship(m_Layer, 1, 1, 2, 2);
-			m_Ships.Add(S);
-			S = new Ship(m_Layer, 0, 1, 2, 1);
-			m_Ships.Add(S);
-			S = new Ship(m_Layer, 1, 3, 1, 1);
-			m_Ships.Add(S);
-			S = new Ship(m_Layer, 3, 0, 2, 1);
-			m_Ships.Add(S);
-
-			//Initialize them
-			foreach (Ship ship in m_Ships) ship.Initialize();
-
-			//Create the board
-			CreateBoard();
-		    UpdateBoard();
-			CreateBirdsView();
-
-			m_Actor = new Actor(m_Layer);
-			m_Actor.Initialize(10, -10, 10);
-			m_Controlled = m_Actor;
-			m_ActiveCamera = m_Controlled.GetCamera();
 		}
 
+		/// <summary>
+		/// Configures global lighting.
+		/// </summary>
 		private void CreateLighting() {
-			//
+			//Turn on lighting
+			Renderer.LightingEnabled = true;
+
+			//Set lighting used
+			Renderer.Lights.SetDefaultLighting(LightCollection.DefaultLightingSetup.Daylight);
+			Renderer.Lights.DirectionalLights[0].Direction = new Vector3(0.2f, -0.6f, -0.8f);
 		}
 
+		/// <summary>
+		/// Create bird's view camera
+		/// </summary>
 		private void CreateBirdsView() {
 			//Instantiate a camera
 			m_BirdsView = new Camera(FlatRedBallServices.GlobalContentManager);
@@ -121,8 +205,26 @@ namespace Klotski.States {
 			m_BirdsView.RotationY = 0.0f;
 			m_BirdsView.RotationZ = 0.0f;
 
+			//Logging
+			if (Global.Logger != null) Global.Logger.AddLine("Bird's view camera created.");
+
+		}
+		#endregion
+
+		/// <summary>
+		/// Set state visibility.
+		/// </summary>
+		/// <param name="visibility">State's new visibility.</param>
+		public override void SetVisibility(bool visibility) {
+			base.SetVisibility(visibility);
+
+			//Set sky visibility
+			m_SkyLayer.Visible = visibility;
 		}
 
+		/// <summary>
+		/// Switch the camera between controlled and birdview.
+		/// </summary>
 		private void SwitchCamera() {
 			//Switch between birdview and controlled camera
 			if (m_ActiveCamera == m_BirdsView)	m_ActiveCamera = m_Controlled.GetCamera();
@@ -130,74 +232,129 @@ namespace Klotski.States {
 		}
 
 		/// <summary>
-		/// Updates drawing camera to follow active camera.
+		/// Find any ship below the actor.
 		/// </summary>
-		private void UpdateCamera() {
-            //
+		/// <returns>Ship below the actor, if there's none, return null.</returns>
+		private Ship GetShipBelowActor() {
+			//Set default value
+			Ship Below = null;
 
-			//Copy position and orentation
-			SpriteManager.Camera.Position		= m_ActiveCamera.Position;
-			SpriteManager.Camera.RotationMatrix = m_ActiveCamera.RotationMatrix;
+			//Calculates position
+			float X = (m_Actor.GetBoundingBox().Min.X + m_Actor.GetBoundingBox().Max.X) / 2.0f;
+			float Y =  m_Actor.GetBoundingBox().Min.Y;
+			float Z = (m_Actor.GetBoundingBox().Min.Z + m_Actor.GetBoundingBox().Max.Z) / 2.0f;
+			Vector3 Position = new Vector3(X, Y - 1.0f, Z);
+
+			//Find the ship in ship list
+			foreach (Ship ship in m_Ships)
+				if (ship.GetBoundingBox().Contains(Position) == ContainmentType.Contains) Below = ship;
+
+			//Returns the ship below
+			return Below;
 		}
-
-		public override void OnEnter() {}
 
 		/// <summary>
-		/// Create array of board from the list of ships.
+		/// Updates the game each frame.
 		/// </summary>
-		private void CreateBoard() {
-			//Get board size
-			int MaxRow		= 1;
-			int MaxColumn	= 1;
-			foreach (Ship ship in m_Ships) {
-				MaxRow		= Math.Max(MaxRow, ship.GetRow() + ship.GetHeight());
-				MaxColumn	= Math.Max(MaxColumn, ship.GetColumn() + ship.GetWidth());
-			}
+		/// <param name="time">Game time's data</param>
+		public override void Update(GameTime time) {
+			//Check actor collision
+			foreach (Ship ship in m_Ships) 
+				if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
 
-			//Create board
-			m_Board = new Ship[MaxColumn, MaxRow];
-			for (int x = 0; x < MaxColumn; x++) for (int y = 0; y < MaxRow; y++) m_Board[x, y] = null;
+			//Check for input
+			#region Input checking
+			if (InputManager.Keyboard.KeyPushed(Keys.Tab))		SwitchCamera();
+			if (InputManager.Keyboard.KeyPushed(Keys.Escape))	Global.StateManager.GoTo(StateID.Pause, null);
 
-			//For each ship
-			foreach (Ship ship in m_Ships) {
-				//Get variable
-				bool Empty	= true;
-				int X		= ship.GetColumn();
-				int Y		= ship.GetRow();
+			//If mouse is clicked
+			#region Change control
+			if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
+				//If block is not moving and no in bird's view
+				if (!m_ReadyToUpdate && m_ActiveCamera != m_BirdsView) {
+					//If currently controlling a ship
+					if (m_Controlled != m_Actor) {
+						//Place actor on top of the ship
+						m_Actor.SetPosition(
+							(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
+							 m_Controlled.GetBoundingBox().Max.Y,
+							(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
 
-				//Ensure ship's space is empty
-				for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
-					if (m_Board[x, y] != null) Empty = false;
+						//Return control to actor
+						m_Actor.SetVisibility(true);
+						m_Controlled = m_Actor;
+					} else {
+						//Get the ship below actor
+						Ship Below = GetShipBelowActor();
 
-				//Place the ship if empty
-				if (Empty) {
-					for (int x = X; x < X + ship.GetWidth(); x++) for (int y = Y; y < Y + ship.GetHeight(); y++)
-						m_Board[x, y] = ship;
+						//If a ship exist
+						if (Below != null) {
+							//Set as controlled
+							m_Controlled = Below;
+
+							//Turn off actor
+							m_Actor.SetVisibility(false);
+						}
+					}
 				}
 			}
-		}
+			#endregion
+			#endregion
 
-        private void UpdateBoard() {
+			//Updating
+			#region Entity updating
+			//If camera is not bird view
+            if (m_ActiveCamera != m_BirdsView) {
+                //Set active camera
+                m_ActiveCamera = m_Controlled.GetCamera();
+
+                //Update controlled entity only
+                m_Controlled.UpdateControl(time);
+                m_Controlled.Update(time);
+			}
+			#endregion
+			UpdateCamera();
+			#region Board updating
+			//If currently controlling a ship
+			if (m_Controlled is Ship) {
+				//If moving, prepare for board update
+				if ((m_Controlled as Ship).IsMoving()) m_ReadyToUpdate = true;
+				else if (m_ReadyToUpdate) {
+					//Update board
+					CreateBoard();
+					UpdateBoard();
+
+					//No longer need to update board
+					m_ReadyToUpdate = false;
+				}
+			}
+			#endregion
+		}
+		
+		/// <summary>
+		/// Updates the board and check next movement.
+		/// </summary>
+		private void UpdateBoard() {
 			//Skip if board doesn't exist
 			if (m_Board == null) return;
 
-            //For each ship
-            foreach (Ship ship in m_Ships) {
-                //Reset movement
-                ship.ResetMovement();
+			//For each ship
+			foreach (Ship ship in m_Ships) {
+				//Reset movement
+				ship.ResetMovement();
 
 				//Check each direction
 				#region Movement availability checking
 				//Is ship on top row?
-                bool Available = (ship.GetRow() + ship.GetHeight()) < m_Board.GetLength(1);
+				bool Available = (ship.GetRow() + ship.GetHeight()) < m_Board.GetLength(1);
 
-                //Check against other ship if not on top row
-                if (Available) {
+				//Check against other ship if not on top row
+				if (Available) {
 					for (int x = ship.GetColumn(); x < ship.GetColumn() + ship.GetWidth(); x++)
 						if (m_Board[x, ship.GetRow() + ship.GetHeight()] != null) Available = false;
-                	if (Available) { ship.AddMovement(Ship.Direction.PositiveY); }
+					if (Available) { ship.AddMovement(Ship.Direction.PositiveY); }
 				}
-				
+
 				//Is ship on bottom row?
 				Available = ship.GetRow() > 0;
 
@@ -229,109 +386,15 @@ namespace Klotski.States {
 				}
 				#endregion
 			}
-        }
-
-		private Ship GetShipBelowActor() {
-			//Set default value
-			Ship Below = null;
-
-			//Calculates actor position
-			float X = (m_Actor.GetBoundingBox().Min.X + m_Actor.GetBoundingBox().Max.X) / 2.0f;
-			float Y = m_Actor.GetBoundingBox().Min.Y;
-			float Z = (m_Actor.GetBoundingBox().Min.Z + m_Actor.GetBoundingBox().Max.Z) / 2.0f;
-			Vector3 Position = new Vector3(X, Y, Z);
-			Position.Z -= 1.0f;
-				
-			foreach (Ship ship in m_Ships)
-				if (ship.GetBoundingBox().Contains(Position) == ContainmentType.Contains) Below = ship;
-
-			return Below;
 		}
 
-		public override void Update(GameTime time) {
-			if (InputManager.Keyboard.KeyPushed(Keys.Escape)) Global.StateManager.GoTo(StateID.Pause, null);
-			if (InputManager.Keyboard.KeyPushed(Keys.LeftShift)) SwitchCamera();
-
-			//
-			foreach (Ship ship in m_Ships) {
-				//If intersecting
-				if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
-			}
-
-			//If controlled ship is moving
-			if (m_Controlled is Ship) {
-				if ((m_Controlled as Ship).IsMoving()) m_ReadyToUpdate = true;
-				else if (m_ReadyToUpdate) {
-					//Update board
-					CreateBoard();
-					UpdateBoard();
-
-					//
-					m_ReadyToUpdate = false;
-				}
-			}
-
-			//If mouse is clicked
-			if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && !m_ReadyToUpdate) {
-				//Check
-				if (m_Controlled != m_Actor) {
-					//Place actor on top of the ship
-					m_Actor.SetPosition(
-						(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
-						m_Controlled.GetBoundingBox().Max.Y,
-						(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
-
-					//Return control to actor
-					m_Actor.SetVisibility(true);
-					m_Controlled = m_Actor;
-				} else {
-					//Get the ship below actor
-					Ship Below = GetShipBelowActor();
-
-					//If a ship exist
-					if (Below != null) {
-						//Set as controlled
-						m_Controlled = Below;
-
-						//Turn off actor
-						m_Actor.SetVisibility(false);
-					}
-				}
-			}
-
-            //If camera is not bird view
-            if (m_ActiveCamera != m_BirdsView) {
-                //Set active camera
-                m_ActiveCamera = m_Controlled.GetCamera();
-
-                //Update controlled
-                m_Controlled.UpdateControl(time);
-                m_Controlled.Update(time);
-            }
-			UpdateCamera();
+		/// <summary>
+		/// Updates drawing camera to follow active camera.
+		/// </summary>
+		private void UpdateCamera() {
+			//Copy position and orentation
+			SpriteManager.Camera.Position		= m_ActiveCamera.Position;
+			SpriteManager.Camera.RotationMatrix = m_ActiveCamera.RotationMatrix;
 		}
-
-		public override void SetVisibility(bool visibility) {
-			base.SetVisibility(visibility);
-
-			//Set sky visibility
-			m_SkyLayer.Visible = visibility;
-		}
-
-        public override void OnExit() {
-            base.OnExit();
-
-            //Reset camera
-            SpriteManager.Camera.X			= 0;
-            SpriteManager.Camera.Y			= 0;
-            SpriteManager.Camera.Z			= 40;
-            SpriteManager.Camera.RotationX  = 0;
-            SpriteManager.Camera.RotationY  = 0;
-            SpriteManager.Camera.RotationZ  = 0;
-
-			//Remove sky
-			SpriteManager.RemoveDrawableBatch(m_Sky);
-			SpriteManager.RemoveLayer(m_SkyLayer);
-        }
 	}
 }
