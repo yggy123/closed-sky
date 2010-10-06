@@ -1,5 +1,4 @@
-﻿
-//Namespaces used
+﻿//Namespaces used
 using System;
 using FlatRedBall;
 using FlatRedBall.IO;
@@ -14,7 +13,7 @@ using System.Collections.Generic;
 namespace Klotski.States
 {
     /// <summary>
-    /// Class description.
+    /// To config Game State
     /// </summary>
     public class StateConfig : State
     {
@@ -152,20 +151,7 @@ namespace Klotski.States
 				//Create parameter
 				Object[] Parameters = new object[2];
 				Parameters[0]		= StateGame.Player.Klotski;
-				Parameters[1]		= new GameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
-
-				GameData Data = new GameData();
-				Data.AddShip(0, 0, 1, 1);
-				Data.AddShip(0, 3, 1, 1);
-				Data.AddShip(1, 0, 1, 2);
-				Data.AddShip(1, 1, 1, 1);
-				Data.AddShip(1, 2, 1, 1);
-				Data.AddShip(1, 3, 1, 2);
-				Data.AddShip(2, 1, 2, 1);
-				Data.AddShip(3, 0, 1, 2);
-				Data.AddShip(3, 3, 1, 2);
-				Data.AddShip(3, 1, 2, 2);
-				Parameters[1] = Data;
+                Parameters[1]       = GameData.LoadGameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
 
 				//Go to play state
             	Global.StateManager.GoTo(StateID.Game, Parameters, true);
