@@ -12,22 +12,22 @@ namespace Klotski {
         /// </summary>
         static void Main() {
 			//Create state manager
-			//try {
+			try {
 				using (StateManager App = new StateManager(Global.APP_STATE, Global.APP_PARAMETERS)) {
 					//Start the game
 					Global.StateManager = App;
 					Global.StateManager.Run();
 				}
-			//} catch (System.Exception ex) {
+			} catch (System.Exception ex) {
 				//Show error
-			//	MessageBox.Show(ex.Message, Global.ERROR_MSGBOX_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(ex.Message, Global.ERROR_MSGBOX_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 				//Add it to the log
-			//	if (Global.Logger != null) Global.Logger.AddLine(ex.Message);
-			//} finally {
+				if (Global.Logger != null) Global.Logger.AddLine(ex.Message);
+			} finally {
 				//Print log file
-				//if (Global.Logger != null) Global.Logger.Print();
-			//}
+				if (Global.Logger != null) Global.Logger.Print();
+			}
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Klotski.States {
 		private Actor				m_Actor;
 		private List<Ship>			m_Ships;
 		private Playable			m_Controlled;
-		private readonly GameData	m_Data;
+		private GameData	        m_Data;
 
 		//Logics
 		private Player	m_Player;
@@ -330,6 +330,7 @@ namespace Klotski.States {
 			}
 			#endregion
 		}
+
 		
 		/// <summary>
 		/// Updates the board and check next movement.
