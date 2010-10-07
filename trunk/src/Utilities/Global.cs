@@ -152,10 +152,10 @@ namespace Klotski.Utilities {
         public const int BOARD_LISTMENU_TOP = 55;
 
         //Config::HeroButton
-        public static readonly string[] HEROBUTTON_MENU = new string[3] { "Klotski", "BFS", "DFS" };
-        public static readonly string[] HEROBUTTON_INFO = new string[3] {"This is Dummy Text for Klotski"
-                                                                         ,"This is Dummy Text for BFS"
-                                                                         ,"This is Dummy Text for DFS"};
+        public static readonly string[] HEROBUTTON_MENU = { "Klotski", "BFS", "DFS" };
+        public static readonly string[] HEROBUTTON_INFO = {"This is Dummy Text for Klotski"
+                                                          ,"This is Dummy Text for BFS"
+                                                          ,"This is Dummy Text for DFS"};
         public const string HEROBUTTON_TEXTURE = "Images/HeroButton";
         public const string HEROBUTTONOVERLAY_TEXTURE = "Images/HeroButtonOverlay";
         public const string HEROBUTTON_FONT = FONT_FOLDER + "Tahoma";
@@ -168,20 +168,23 @@ namespace Klotski.Utilities {
         public const int HEROBUTTON_IMAGEHEIGHT = 115;
 
         //Config::MenuButton
-        public static readonly string[] CONFIG_MENU = new string[2] { "Back", "Go Save The King!" };
+        public static readonly string[] CONFIG_MENU = { "Back", "Go Save The King!" };
         public const int CONFIGBUTTON_LEFT = 515;
         public const int CONFIGBUTTON_TOP = BOARD_LISTMENU_TOP + 420;
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
 
 		//State game
-		public const float GAMEGAP_WIDTH		= 10.0f;
-		public const float GAMEGAP_HEIGHT		= 10.0f;
-		public const float GAMETILE_WIDTH		= 40.0f;
-		public const float GAMETILE_HEIGHT		= 40.0f;
-		public const float GAME_VERTICAL		= -10.0f;
-		public const float GAME_CAMERAHEIGHT	= 500.0f;
-		public const float GAME_GRAVITY			= 140.0f;
+		public const float	GAMEGAP_WIDTH		= 10.0f;
+		public const float	GAMEGAP_HEIGHT		= 10.0f;
+		public const float	GAMETILE_WIDTH		= 40.0f;
+		public const float	GAMETILE_HEIGHT		= 40.0f;
+		public const float	GAME_VERTICAL		= -10.0f;
+	    public const double GAME_FALLLIMIT      = -150.0f;
+		public const float	GAME_CAMERAHEIGHT	= 500.0f;
+        public const float  GAME_CAMLIMIT       = (float) (Math.PI * 0.4f);
+		public const float	GAME_GRAVITY		= 140.0f;
+		public const string GAME_BGM = "Game.mp3";
 
 		//Actor
 		public const string				ACTOR_MODEL = "Vincent";
@@ -190,25 +193,47 @@ namespace Klotski.Utilities {
 		public const float				ACTORCAM_DISTANCE = 20.0f;
 		public const float				ACTORCAM_HEIGHT = 10.0f;
 		public static readonly string[] ACTOR_ANIMATIONS = { "Idle", "Walking", "Jumping", "Landing" };
+
+		//GUI
+		public const int	LIFE_X = 20;
+		public const int	LIFE_Y = 13;
+		public const int	LIFEBAR_X = 32;
+		public const int	LIFEBAR_Y = 32;
+		public const string LIFE_TEXTURE = "Images/Life";
+		public const string LIFEBAR_TEXTURE = "Images/LifeBar";
         
         //Ship
 	    public const float SHIPCAM_HEIGHT = 10.0f;
 	    public const float SHIPCAM_DISTANCE = 50.0f;
 
 		//Pause::MenuButton
-		public static readonly string[] PAUSE_MENU = new string[4] { "Resume", "Restart", "To Title", "Exit" };
+		public static readonly string[] PAUSE_MENU = { "Resume", "Restart", "To Title", "Exit" };
 		public const int                PAUSEBUTTON_LEFT = 470;
 		public const int                PAUSEBUTTON_TOP = 230;
 		public const int                PAUSEBUTTON_SPACE = 50;
 		public const int                PAUSEBUTTON_WIDTH = 100;
+		public const string				PAUSE_HELP =
+            "The king is trapped among other balloons\r\n" +
+			"that caught up in the storm!\r\n" +
+			"\r\n" +
+			"OBJECTIVE\r\n" +
+			"To save the king, you must get him out of\r\n" +
+			"the storm by moving other balloons around\r\n" +
+			"so the Royal Zeppelin can safely reach the\r\n" +
+			"exit point marked by arrow.\r\n" +
+			"\r\n" +
+			"CONTROL\r\n" +
+			"Move the mouse to move the camera.\r\n" +
+			"To switch camera, use the TAB button.\r\n" +   
+			"To move around, use the WASD buttons.\r\n" +
+			"To jump, you can use the space button.\r\n" +
+			"\r\n" +      
+			"To take control of a balloon, click the\r\n" +
+			"mouse left button while on top of the\r\n" +
+			"balloon, and click again to get out.\r\n" +
+			"While in control of a balloon, you\r\n" +
+			"can move it with WASD buttons.";
 
-		//Pause::Help
-		public static readonly string[] LABEL_MENU = new string[6] { "Help", 
-                    "vasdasdweqweqweasdasdasd", 
-                    "12313easdasdasczxc", 
-                    "asdsdasdwfqwqweqweqwe",
-                    "asdasdzczxcvdssfad",
-        "asdasdadasd"};
 
 	    //Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";

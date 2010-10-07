@@ -2,17 +2,14 @@
 using System;
 using FlatRedBall;
 using FlatRedBall.Input;
-using FlatRedBall.IO;
 using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Lighting;
-using Klotski.Controls;
 using Klotski.Utilities;
 using Klotski.Components;
 using Klotski.States.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TomShane.Neoforce.Controls;
-using System.Collections.Generic;
 
 //Application namespace
 namespace Klotski.States

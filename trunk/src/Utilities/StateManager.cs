@@ -11,16 +11,16 @@ namespace Klotski.Utilities {
     /// Manages various game states.
     /// </summary>
     public class StateManager : Game {
-    	private StateID		m_StartState;
-		private object[]	m_StartParameters;
+    	private readonly StateID	m_StartState;
+		private readonly object[]	m_StartParameters;
 
         //Members
         private SpriteBatch						m_SpriteBatch;
         private readonly GraphicsDeviceManager  m_Device;
 
 		//State list
-		private int					m_Depth;
-    	private LinkedList<State>	m_StateList;
+		private int							m_Depth;
+    	private readonly LinkedList<State>	m_StateList;
 
     	//Class constants;
 		#region Constants
@@ -54,7 +54,7 @@ namespace Klotski.Utilities {
 
 			//Create GUI Manager
 			#region Global GUI manager instantiation
-			Global.GUIManager = new TomShane.Neoforce.Controls.Manager(this, m_Device, GUI_SKIN, false);
+			Global.GUIManager = new Manager(this, m_Device, GUI_SKIN, false);
 			Global.GUIManager.RenderTargetUsage = RenderTargetUsage.DiscardContents;
 			#endregion
 			
@@ -165,7 +165,7 @@ namespace Klotski.Utilities {
 			EnterState();
 
 			//Logging
-			Global.Logger.AddLine(state.ToString() + " has been added to the state list.");
+			Global.Logger.AddLine(state + " has been added to the state list.");
 
 			//If top state isn't popup, turn off lower states
 			#region Manage popup states);

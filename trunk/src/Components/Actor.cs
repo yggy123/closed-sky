@@ -21,31 +21,45 @@ namespace Klotski.Components {
 		private Vector3	m_Sideway;
 		private Vector3 m_Movement;
 
+        //Data
+        private int m_Life;
+
+	    private Ship m_LastShip;
+
 		/// <summary>
 		/// Actor class constructor.
 		/// </summary>
-		/// <param name="layer">ACtor's layer</param>
+		/// <param name="layer">Actor's layer</param>
 		public Actor(Layer layer) : base(layer) {
 			//Empties variables
+            m_LastShip  = null;
 			m_RotationX = 0.0f;
 			m_RotationY = 0.0f;
 			m_Movement	= Vector3.Zero;
 
 			//Initialize values
+            m_Life      = 0;
 			m_Jumping	= false;
 			m_Forward	= new Vector3(0.0f, 0.0f, 1.0f);
 			m_Sideway	= new Vector3(-1.0f, 0.0f, 0.0f);
 		}
 
-		/// <summary>
-		/// Initialize actor
-		/// </summary>
-		/// <param name="x">Actor's X position</param>
-		/// <param name="y">Actor's Y position</param>
-		/// <param name="z">Actor's Z position</param>
-		public void Initialize(float x, float y, float z) {
+	    /// <summary>
+	    /// Initialize actor
+	    /// </summary>
+	    /// <param name="ship">The ship the character is on.</param>
+	    /// <param name="life"></param>
+	    public void Initialize(Ship ship, int life) {
+            //Set character's life
+		    m_Life      = life;
+		    m_LastShip  = ship;
+
+            //Get character's position
+	    	Vector3 Position  = ship.GetCenterTop();
+	    	Position.Y		 += 25.0f;
+
 			//Calls parent initialization
-			Initialize(Global.ACTOR_MODEL, true, x, y, z);
+			Initialize(Global.ACTOR_MODEL, true, Position.X, Position.Y, Position.Z);
 
 			//Set model animation
 			m_Model.CurrentAnimation = Global.ACTOR_ANIMATIONS[1];
@@ -55,11 +69,7 @@ namespace Klotski.Components {
 			//Set camera orientation
 			m_Camera.RotationX = 0;
 			m_Camera.RotationY = (float)Math.PI;
-			m_Camera.RotationZ = 0;
-		}
-
-		public void SetPosition(float x, float y, float z) {
-			m_Model.Position = new Vector3(x, y, z);
+            m_Camera.RotationZ = 0;
 		}
 
 		/// <summary>
@@ -92,50 +102,79 @@ namespace Klotski.Components {
 			//Get time difference
 			float Difference = time.ElapsedGameTime.Milliseconds / 1000.0f;
 
-			//TODO: Fix character rotation
+            //Apply gravity
+            m_Model.YAcceleration = -Global.GAME_GRAVITY;
 
-			//Moves character
+			//Moves and rotate character
 			m_Model.Position += m_Movement * Global.ACTOR_VELOCITY * Difference;
-			if (m_Movement.LengthSquared() > 0) m_Model.RotationY = (float)Math.Asin(m_Movement.X);
+			if (m_Movement.LengthSquared() > 0) m_Model.RotationY = (float)Math.Atan2(m_Movement.X, m_Movement.Z);
 
-			//TODO: Apply gravity
+            //If under certain limit
+            if (m_Model.Position.Y <= Global.GAME_FALLLIMIT) {
+                //Reset stuff
+                m_Jumping = false;
+                m_Model.YVelocity = 0.0f;
+                m_Model.CurrentAnimation = "Walking";
+
+                //Reduce life
+                m_Life--;
+
+                //Return to last ship visited
+                m_Model.Position = m_LastShip.GetCenterTop();
+            }
 
 			//Updates direction
 			m_Forward = Vector3.Transform(m_Forward, Matrix.CreateRotationY(m_RotationX));
 			m_Sideway = Vector3.Transform(m_Sideway, Matrix.CreateRotationY(m_RotationX));
 
-			//TODO: Limits camera
-
 			//Updates camera
-			//Vector3 Behind = -Vector3.Normalize(m_Forward + new Vector3(0, 0.1));
 			m_Camera.Position = m_Model.Position - 
 				(m_Forward * Global.ACTORCAM_DISTANCE) + 
 				new Vector3(0, Global.ACTORCAM_HEIGHT, 0);
 			m_Camera.RotationX += m_RotationY;
 			m_Camera.RotationY += m_RotationX;
 
-			//Jump with space
+            //Limits camera
+            if (m_Camera.RotationX > Math.PI && m_Camera.RotationX < Math.PI * 1.5f) m_Camera.RotationX = (float) (Math.PI * 1.5f);
+            else if (m_Camera.RotationX > Global.GAME_CAMLIMIT && m_Camera.RotationX <= Math.PI) m_Camera.RotationX =  Global.GAME_CAMLIMIT;
+
+			//Jump with space);
 			if (InputManager.Keyboard.KeyDown(Keys.Space) && !m_Jumping) {
+                //Set animation
 				m_Model.CurrentAnimation = "Jumping";
 
-				m_Model.YVelocity = Global.ACTOR_JUMPING;
-				m_Model.YAcceleration = -Global.GAME_GRAVITY;
-				m_Jumping = true;
+                //Start jumping
+				m_Model.YVelocity   = Global.ACTOR_JUMPING;
+				m_Jumping           = true;
 			}
 		}
 
 		public void OnCollision(Ship ship) {
-			//If jumping
-			if (m_Jumping) {
-				//Stop jumping
-				m_Model.YVelocity = 0.0f;
-				m_Model.YAcceleration = 0.0f;
-				m_Jumping = false;
-				m_Model.CurrentAnimation = "Walking";
+            //Determines should actor keep falling
+		    bool Falling = ship.GetBoundingBox().Max.Y > (GetBoundingBox().Min.Y + GetBoundingBox().Max.Y)/2;
 
-				//Place it
+            //If no longer falling
+            if (!Falling) {
+				//Stop jumping
+				m_Jumping                   = false;
+				m_Model.YVelocity           = 0.0f;
+				m_Model.CurrentAnimation    = "Walking";
+
+                //Set last ship visited
+			    m_LastShip = ship;
+
+				//Place it on the ship
 				m_Model.Y = ship.GetBoundingBox().Max.Y;
-			}
+            }
+
 		}
+
+	    public void SetPosition(float f, float f1, float f2) {
+	        m_Model.Position = new Vector3(f, f1, f2);
+	    }
+
+	    public int GetLife() {
+            return m_Life;
+	    }
 	}
 }

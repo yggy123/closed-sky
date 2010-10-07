@@ -79,18 +79,19 @@ namespace Klotski.States {
                 Parameters[1]   = Global.STORY_TEXT;
 
                 //Go to story
-                Global.StateManager.GoTo(StateID.Story, Parameters, false);
-            }
-            if (sender == m_Buttons[1])
-            {
-                //Create parameter
-                Parameters    = new object[2];
-                Parameters[0] = 5;
-                Parameters[1] = 4;
+                Global.StateManager.GoTo(StateID.Story, Parameters);
+			}
 
-                //Go to story
-                Global.StateManager.GoTo(StateID.Editor, Parameters, false);
-            }
+			if (sender == m_Buttons[1]) {
+				//Create parameter
+				Parameters = new object[2];
+				Parameters[0] = 5;
+				Parameters[1] = 4;
+
+				//Go to story
+				Global.StateManager.GoTo(StateID.Editor, Parameters);
+			}
+
             if (sender == m_Buttons[2]) {
                 //Create parameter
                 Parameters      = new object[2];
@@ -105,7 +106,7 @@ namespace Klotski.States {
 
 		public override void OnEnter() {
 			//Play song
-			//Global.SoundManager.PlayBGM("song.mp3");
+			Global.SoundManager.PlayBGM(Global.TITLE_BGM);
 		}
 
 		public override void Update(GameTime time) {

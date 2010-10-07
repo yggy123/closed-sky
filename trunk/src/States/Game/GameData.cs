@@ -22,6 +22,9 @@ namespace Klotski.States.Game {
 		public List<int> m_ShipsHeight;
 		public List<int> m_ShipsWidth;
 
+		//Data
+		public int Goal;
+
 		/// <summary>
 		/// Game data default class constructor.
 		/// </summary>
@@ -31,6 +34,7 @@ namespace Klotski.States.Game {
 			m_ShipsColumn	= new List<int>();
 			m_ShipsWidth	= new List<int>();
 			m_ShipsHeight	= new List<int>();
+			Goal			= 0;
 		}
 
         public static void SaveGameData(GameData data, string file) {

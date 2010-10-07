@@ -2,7 +2,6 @@
 //Namespace used
 using System;
 using System.Collections.Generic;
-using FlatRedBall;
 using Klotski.Utilities;
 using FlatRedBall.Input;
 using FlatRedBall.Graphics;
@@ -117,6 +116,13 @@ namespace Klotski.Components {
 			return m_Height;
 		}
 
+        public Vector3 GetCenterTop() {
+            return new Vector3(
+                ((m_AABB.Min.X + m_AABB.Max.X) / 2.0f)  + m_Model.Position.X,
+                  m_AABB.Max.Y                          + m_Model.Position.Y,
+                ((m_AABB.Min.Z + m_AABB.Max.Z) / 2.0f)  + m_Model.Position.Z);
+        }
+
         public List<Direction> GetAvailableMovement()
         {
             return m_Available;
@@ -210,6 +216,23 @@ namespace Klotski.Components {
                     (m_Width > m_Height) ? 0.0f : (m_AABB.Max.X - m_AABB.Min.X) / 2.0f,
                     Global.SHIPCAM_HEIGHT,
                     (m_Width > m_Height) ? (m_AABB.Max.Z - m_AABB.Min.Z) / 2.0f : 0.0f);
+		}
+	
+		/// <summary>
+		/// Is this ship is the royal zeppelin?
+		/// </summary>
+		/// <returns>IOf</returns>
+		public bool IsKing() {
+			return (m_Width == 2 && m_Height == 2);
+		}
+
+		public void Wins() {
+			//Set velocity
+			m_Model.Velocity = new Vector3(0.0f, 0.0f, -1.0f) * (Global.GAMETILE_HEIGHT + (Global.GAMEGAP_HEIGHT * 2));
+			m_Model.RotationY = (float) (Math.PI * 2);
+		}
+
+		public void AnimateWinning() {
 		}
 	}
 }

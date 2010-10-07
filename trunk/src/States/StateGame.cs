@@ -2,12 +2,14 @@
 //Namespaces used
 using System;
 using FlatRedBall;
+using FlatRedBall.Graphics.Model;
 using FlatRedBall.Input;
 using FlatRedBall.Graphics;
 using FlatRedBall.Graphics.Lighting;
 using Klotski.Utilities;
 using Klotski.Components;
 using Klotski.States.Game;
+using Klotski.Controls.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -35,18 +37,25 @@ namespace Klotski.States {
 		private Camera m_ActiveCamera;
 		private Camera m_BirdsView;
 
-		//Playable components
+		//Game components
 		private Actor				m_Actor;
+		private Ship				m_King;
 		private List<Ship>			m_Ships;
 		private Playable			m_Controlled;
-		private GameData	        m_Data;
+		private PositionedModel		m_Arrow;
+		private readonly GameData	m_Data;
+
+		//GUI
+		private LifeBar m_LifeBar;
 
 		//Logics
 		private Player	m_Player;
 		private Ship[,] m_Board;
+		private bool	m_Victory;
+		private bool	m_Initialized;
 		private bool	m_ReadyToUpdate;
 
- 
+
 		/// <summary>
 		/// State Game class constructor.
 		/// </summary>
@@ -54,17 +63,21 @@ namespace Klotski.States {
 			//Initialize variable
 			m_Data			= data;
 			m_Player		= player;
+			m_Victory		= false;
+			m_Initialized	= false;
 			m_ReadyToUpdate	= false;
 
 			//Empties variables
 			m_Sky			= null;
 			m_Actor			= null;
+			m_King			= null;
 			m_Ships			= null;
 			m_Board			= null;
 			m_SkyLayer		= null;
 			m_BirdsView		= null;
 			m_ActiveCamera	= null;
 			m_Controlled	= null;
+			m_LifeBar		= null;
 		}
 
 		/// <summary>
@@ -73,8 +86,13 @@ namespace Klotski.States {
 		/// <note>DO NOT CHANGE INITIALIZATION ORDER</note>
 		public override void Initialize() {
 			//Initialize environment
-			CreateSky();
-			CreateLighting();
+			if (!m_Initialized) CreateSky();
+			if (!m_Initialized) CreateGUI();
+			if (!m_Initialized) CreateArrow();
+			if (!m_Initialized) CreateLighting();
+
+			//If has been initialized, remove old ships
+			//if (m_Initialized) foreach (PositionedModel model in m_Layer.Models) SpriteManager.RemovePositionedObject(model);
 
 			//Load ships
 			m_Ships = m_Data.LoadShipList(m_Layer);
@@ -85,13 +103,21 @@ namespace Klotski.States {
 			UpdateBoard();
 
 			//Create camera
-			CreateBirdsView();
+			if (!m_Initialized) CreateBirdsView();
+
+			//TODO: Actor restarting
 
 			//Create and initialize actor
 			m_Actor			= new Actor(m_Layer);
 			m_Controlled	= m_Actor;
 			m_ActiveCamera	= m_Controlled.GetCamera();
-			m_Actor.Initialize(10, -10, 10);
+			m_Actor.Initialize(m_Ships[0], 3);
+
+			//Start BGM
+			Global.SoundManager.PlayBGM(Global.GAME_BGM);
+
+			//Game is initialized
+			m_Initialized = true;
 		}
 
 		/// <summary>
@@ -106,12 +132,12 @@ namespace Klotski.States {
 			base.OnExit();
 
 			//Reset camera
-			SpriteManager.Camera.X = Global.APPCAM_DEFAULTX;
-			SpriteManager.Camera.Y = Global.APPCAM_DEFAULTY;
-			SpriteManager.Camera.Z = Global.APPCAM_DEFAULTZ;
-			SpriteManager.Camera.RotationX = Global.APPCAM_DEFAULTROTX;
-			SpriteManager.Camera.RotationY = Global.APPCAM_DEFAULTROTY;
-			SpriteManager.Camera.RotationZ = Global.APPCAM_DEFAULTROTZ;
+			SpriteManager.Camera.X			= Global.APPCAM_DEFAULTX;
+			SpriteManager.Camera.Y			= Global.APPCAM_DEFAULTY;
+			SpriteManager.Camera.Z			= Global.APPCAM_DEFAULTZ;
+			SpriteManager.Camera.RotationX	= Global.APPCAM_DEFAULTROTX;
+			SpriteManager.Camera.RotationY	= Global.APPCAM_DEFAULTROTY;
+			SpriteManager.Camera.RotationZ	= Global.APPCAM_DEFAULTROTZ;
 
 			//Remove sky
 			SpriteManager.RemoveDrawableBatch(m_Sky);
@@ -183,6 +209,36 @@ namespace Klotski.States {
 		}
 
 		/// <summary>
+		/// Create goal arrow.
+		/// </summary>
+		private void CreateArrow() {
+			//Create arrow model
+			m_Arrow = ModelManager.AddModel(Global.MODEL_FOLDER + "Arrow", FlatRedBallServices.GlobalContentManager, true);
+			m_Arrow.CurrentAnimation = "Default";
+			ModelManager.AddToLayer(m_Arrow, m_Layer);
+
+			//Move arrow to goal
+			m_Arrow.X = (Global.GAMETILE_WIDTH + (Global.GAMEGAP_WIDTH * 2)) * (m_Data.Goal + 1.0f);
+			m_Arrow.Y = -50.0f;
+			m_Arrow.Z = 0.0f;
+		}
+
+		/// <summary>
+		/// Create game's graphical interface.
+		/// </summary>
+		private void CreateGUI() {
+			//Create lifebar
+			m_LifeBar		= new LifeBar(Global.GUIManager);
+			m_LifeBar.Left	= Global.LIFEBAR_X;
+			m_LifeBar.Top	= Global.LIFEBAR_Y;
+			m_LifeBar.Init();
+
+			//Add it
+			m_Panel.Add(m_LifeBar);
+			Global.GUIManager.Add(m_LifeBar);
+		}
+
+		/// <summary>
 		/// Create bird's view camera
 		/// </summary>
 		private void CreateBirdsView() {
@@ -202,7 +258,7 @@ namespace Klotski.States {
 			
 			//Set rotation
 			m_BirdsView.RotationX = (float)(Math.PI * 1.5f);
-			m_BirdsView.RotationY = 0.0f;
+			m_BirdsView.RotationY = (float) Math.PI;
 			m_BirdsView.RotationZ = 0.0f;
 
 			//Logging
@@ -258,79 +314,91 @@ namespace Klotski.States {
 		/// </summary>
 		/// <param name="time">Game time's data</param>
 		public override void Update(GameTime time) {
-			//Check actor collision
-			foreach (Ship ship in m_Ships) 
-				if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
+			//If winning
+			if (m_Victory) {
+				//Only updates the king
+				m_King.AnimateWinning();
+			}
+			//Otherwise, do the usual update
+			else {
+				//Check actor collision);
+				foreach (Ship ship in m_Ships) 
+					if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
 
-			//Check for input
-			#region Input checking
-			if (InputManager.Keyboard.KeyPushed(Keys.Tab))		SwitchCamera();
-			if (InputManager.Keyboard.KeyPushed(Keys.Escape))	Global.StateManager.GoTo(StateID.Pause, null);
+				//Check for input
+				#region Input checking
+				if (InputManager.Keyboard.KeyPushed(Keys.Tab))		SwitchCamera();
+				if (InputManager.Keyboard.KeyPushed(Keys.Escape))	Global.StateManager.GoTo(StateID.Pause, null);
 
-			//If mouse is clicked
-			#region Change control
-			if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
-				//If block is not moving and no in bird's view
-				if (!m_ReadyToUpdate && m_ActiveCamera != m_BirdsView) {
-					//If currently controlling a ship
-					if (m_Controlled != m_Actor) {
-						//Place actor on top of the ship
-						m_Actor.SetPosition(
-							(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
-							 m_Controlled.GetBoundingBox().Max.Y,
-							(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
+				//If mouse is clicked
+				#region Change control
+				if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
+					//If block is not moving and no in bird's view
+					if (!m_ReadyToUpdate && m_ActiveCamera != m_BirdsView) {
+						//If currently controlling a ship
+						if (m_Controlled != m_Actor) {
+							//Place actor on top of the ship
+							m_Actor.SetPosition(
+								(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
+								 m_Controlled.GetBoundingBox().Max.Y,
+								(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
 
-						//Return control to actor
-						m_Actor.SetVisibility(true);
-						m_Controlled = m_Actor;
-					} else {
-						//Get the ship below actor
-						Ship Below = GetShipBelowActor();
+							//Return control to actor
+							m_Actor.SetVisibility(true);
+							m_Controlled = m_Actor;
+						} else {
+							//Get the ship below actor
+							Ship Below = GetShipBelowActor();
 
-						//If a ship exist
-						if (Below != null) {
-							//Set as controlled
-							m_Controlled = Below;
+							//If a ship exist
+							if (Below != null) {
+								//Set as controlled
+								m_Controlled = Below;
 
-							//Turn off actor
-							m_Actor.SetVisibility(false);
+								//Turn off actor
+								m_Actor.SetVisibility(false);
+							}
 						}
 					}
 				}
-			}
-			#endregion
-			#endregion
+				#endregion
+				#endregion
 
-			//Updating
-			#region Entity updating
-			//If camera is not bird view
-            if (m_ActiveCamera != m_BirdsView) {
-                //Set active camera
-                m_ActiveCamera = m_Controlled.GetCamera();
+				//Updating
+				#region Entity updating
+				//If camera is not bird view
+				if (m_ActiveCamera != m_BirdsView) {
+					//Set active camera
+					m_ActiveCamera = m_Controlled.GetCamera();
 
-                //Update controlled entity only
-                m_Controlled.UpdateControl(time);
-                m_Controlled.Update(time);
-			}
-			#endregion
-			UpdateCamera();
-			#region Board updating
-			//If currently controlling a ship
-			if (m_Controlled is Ship) {
-				//If moving, prepare for board update
-				if ((m_Controlled as Ship).IsMoving()) m_ReadyToUpdate = true;
-				else if (m_ReadyToUpdate) {
-					//Update board
-					CreateBoard();
-					UpdateBoard();
+					//Update controlled entity only
+					m_Controlled.UpdateControl(time);
+					m_Controlled.Update(time);
 
-					//No longer need to update board
-					m_ReadyToUpdate = false;
+                    //If actor dies
+                    if (m_Actor.GetLife() <= 0)
+                        m_Active = false;
 				}
-			}
-			#endregion
-		}
 
+				#endregion
+				UpdateCamera();
+				#region Board updating
+				//If currently controlling a ship
+				if (m_Controlled is Ship) {
+					//If moving, prepare for board update
+					if ((m_Controlled as Ship).IsMoving()) m_ReadyToUpdate = true;
+					else if (m_ReadyToUpdate) {
+						//Update board
+						CreateBoard();
+						UpdateBoard();
+
+						//No longer need to update board
+						m_ReadyToUpdate = false;
+					}
+				}
+				#endregion
+			}
+		}
 		
 		/// <summary>
 		/// Updates the board and check next movement.
@@ -338,6 +406,24 @@ namespace Klotski.States {
 		private void UpdateBoard() {
 			//Skip if board doesn't exist
 			if (m_Board == null) return;
+
+			//Checks winning condition if not editor
+			if (m_Player != Player.Storm && m_Board[m_Data.Goal, 0] != null)
+				if (m_Board[m_Data.Goal, 0].IsKing()) {
+					//Wins
+					m_Victory	= true;
+					m_King		= m_Board[m_Data.Goal, 0];
+					m_King.Wins();
+
+					//Switch camera
+					SwitchCamera();
+					UpdateCamera();
+
+					//Play SFX
+
+					//No need to check the rest
+					return;
+				}
 
 			//For each ship
 			foreach (Ship ship in m_Ships) {
