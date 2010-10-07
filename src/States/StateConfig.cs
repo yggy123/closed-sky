@@ -1,4 +1,5 @@
-﻿//Namespaces used
+﻿
+//Namespaces used
 using System;
 using FlatRedBall;
 using FlatRedBall.IO;
@@ -13,10 +14,9 @@ using System.Collections.Generic;
 namespace Klotski.States
 {
     /// <summary>
-    /// To config Game State
+    /// Class description.
     /// </summary>
-    public class StateConfig : State
-    {
+    public class StateConfig : State {
         //Members
         private ListBox         m_FileListBox;
         private HeroButton[]    m_HeroButtons;
@@ -150,8 +150,8 @@ namespace Klotski.States
 			if (sender == m_MenuButtons[1]) {
 				//Create parameter
 				Object[] Parameters = new object[2];
-				Parameters[0]		= StateGame.Player.Klotski;
-                Parameters[1]       = GameData.LoadGameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
+				Parameters[0] = StateGame.Player.Klotski;
+				Parameters[1] = GameData.LoadGameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
 
 				//Go to play state
             	Global.StateManager.GoTo(StateID.Game, Parameters, true);

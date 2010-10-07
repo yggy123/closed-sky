@@ -13,9 +13,9 @@ namespace Klotski.States
     public class StatePause : State
     {
         //Member
-        private Window window;
-        private Button[] m_PauseButtons;
-        private Label[] m_Label;
+        private Window		window;
+        private Button[]	m_PauseButtons;
+        private Label		m_Help;
 
         //Class Constructor
         public StatePause()
@@ -26,7 +26,7 @@ namespace Klotski.States
         	m_PopUp = true;
             
             //Nulling value
-            m_Label = null;
+            m_Help = null;
             m_PauseButtons = null;
         }
 
@@ -71,24 +71,18 @@ namespace Klotski.States
             }
             #endregion
 
-            #region Initialize Label
-            m_Label = new Label[Global.LABEL_MENU.Length];
-            for (int i = 0; i < m_Label.Length; i++)
-            {
-                //Create Lbel
-                m_Label[i] = new Label(Global.GUIManager);
-                m_Label[i].Text = Global.LABEL_MENU[i];
-                m_Label[i].Top = 220 + i*30;
-                m_Label[i].Left = 200;
-                m_Label[i].Width = 250;
-
-                //Add the label
-                m_Panel.Add(m_Label[i]);
-                //window.Add(m_Label[i]);
-                Global.GUIManager.Add(m_Label[i]);
-            }
- 
-            #endregion
+			//Create Help label
+			m_Help = new Label(Global.GUIManager);
+			m_Help.Init();
+        	m_Help.Text = Global.PAUSE_HELP;
+        	m_Help.Top = 190;
+        	m_Help.Left = 200;
+        	m_Help.Width = 300;
+        	m_Help.Height = 280;          
+			
+			//Add it to the
+        	m_Panel.Add(m_Help);
+        	Global.GUIManager.Add(m_Help);
         }
 
         private void PauseChoose(object sender, EventArgs e)
