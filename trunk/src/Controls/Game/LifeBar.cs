@@ -1,4 +1,5 @@
-﻿
+﻿//ReSharper disable DoNotCallOverridableMethodsInConstructor
+
 //Namespaces used
 using Klotski.Utilities;
 using Microsoft.Xna.Framework;
@@ -12,18 +13,18 @@ namespace Klotski.Controls.Game {
 	/// </summary>
 	public class LifeBar : Control {
 		//Value
-		protected int m_Life;
+		private int m_Life;
 
 		//Image
-		protected Texture2D m_BarImage;
-		protected Texture2D m_LifeImage;
+		private readonly Texture2D m_BarImage;
+		private readonly Texture2D m_LifeImage;
 
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
 		public LifeBar(Manager manager) : base(manager) {
 			//Initialize life
-			m_Life = 3;
+			m_Life = 0;
 
 			//Load images
 			m_LifeImage = Global.StateManager.Content.Load<Texture2D>(Global.LIFE_TEXTURE);

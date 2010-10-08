@@ -10,19 +10,19 @@ using Microsoft.Xna.Framework.Input;
 
 //Class namespace
 namespace Klotski.Components {
+    //Enumeration
+	public enum Direction {
+		NegativeY = -2,
+        NegativeX = -1,
+		None	  =  0,
+        PositiveX =  1,
+        PositiveY =  2
+    }
+
 	/// <summary>
 	/// Ship class, a block in klotski puzzle.
 	/// </summary>
 	public class Ship : Playable {
-        //Enumeration
-        public enum Direction {
-            PositiveX,
-            NegativeX,
-            PositiveY,
-            NegativeY,
-			None
-        }
-
 		//Data
 		protected int m_Row;
 		protected int m_Column;
@@ -33,7 +33,12 @@ namespace Klotski.Components {
 		protected float				m_MoveTime;
 		protected Vector3           m_Forward;
 		protected Direction			m_Movement;
-	    protected List<Direction> m_Available;
+	    protected List<Direction>	m_Available;
+
+		//AI
+		protected Stack<Ship>		m_ShipStack;
+		protected Stack<Direction>	m_MoveStack;
+		public bool Returning;
 
 		/// <summary>
 		/// 
@@ -52,9 +57,14 @@ namespace Klotski.Components {
 
             //Initialize variable
 			m_MoveTime	= 0.0f;
+			Returning	= false;
             m_Forward   = Vector3.Zero;
             m_Movement	= Direction.None;
             m_Available = new List<Direction>();
+
+			//Prepare stack
+			m_ShipStack	= new Stack<Ship>();
+			m_MoveStack = new Stack<Direction>();
 		}
 
         public void Initialize() {
@@ -75,6 +85,10 @@ namespace Klotski.Components {
             m_Camera.RotationX  = 0.0f;
             m_Camera.RotationY = (float) ((m_Width > m_Height) ? (Math.PI * 1.5f) : Math.PI);
 			m_Camera.RotationZ = 0.0f;
+
+			//Clear stack
+			m_ShipStack.Clear();
+			m_MoveStack.Clear();
 
 			//Logging
 			if (Global.Logger != null) Global.Logger.AddLine("Ship created.");
@@ -190,7 +204,7 @@ namespace Klotski.Components {
 				}
 
 				//If has reached limit
-				if (m_MoveTime >= 1.0f) {
+				if (m_MoveTime >= 0.5f) {
 					//Change row and collumn
 					switch (m_Movement) {
 					case Direction.PositiveX: { m_Column++; break; }
@@ -233,6 +247,28 @@ namespace Klotski.Components {
 		}
 
 		public void AnimateWinning() {
+		}
+
+		///
+        public void Move(Direction direction) {
+            //Set direction as current movement
+            m_Movement = direction;
+
+			//Add to the stack
+			m_MoveStack.Push(direction);
+        }
+
+		public Direction GetBackDirection() {
+			if (m_MoveStack != null) if (m_MoveStack.Count > 0) return (Direction) (-(int) m_MoveStack.Peek());
+			return Direction.None;
+		}
+
+		public void Return() {
+			//If stack has existing movement, use it to return
+			if (m_MoveStack != null) if (m_MoveStack.Count > 0) {
+				m_Movement = (Direction)(-(int)m_MoveStack.Pop());
+				Returning = true;
+			}
 		}
 	}
 }

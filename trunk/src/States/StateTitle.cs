@@ -5,6 +5,7 @@ using Klotski.Controls;
 using Klotski.Utilities;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
+using Klotski.States.Game;
 
 //Application namespace
 namespace Klotski.States {

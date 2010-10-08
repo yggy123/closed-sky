@@ -1,19 +1,13 @@
 ﻿//Namespaces used
-using FlatRedBall;
-using Klotski.Controls;
 using Klotski.Utilities;
 using Microsoft.Xna.Framework;
 using TomShane.Neoforce.Controls;
-using System.Collections.Generic;
-using FlatRedBall.IO;
-
 
 namespace Klotski.States
 {
-    public class StatePause : State
-    {
+    public class StatePause : State {
         //Member
-        private Window		window;
+        private Window		m_Window;
         private Button[]	m_PauseButtons;
         private Label		m_Help;
 
@@ -34,20 +28,20 @@ namespace Klotski.States
         {
             #region Initialize Window
             //Create Window
-            window = new Window(Global.GUIManager);
-            window.Init();
-            window.CloseButtonVisible = false;
-            window.Movable = false;
-            window.StayOnBack = true;
-            window.Resizable = false;
+            m_Window = new Window(Global.GUIManager);
+            m_Window.Init();
+            m_Window.CloseButtonVisible = false;
+            m_Window.Movable = false;
+            m_Window.StayOnBack = true;
+            m_Window.Resizable = false;
           
-            window.Text = "Pause Game";
-            window.Top = 150; 
-            window.Left = 170;
-            window.Width = 450;
-            window.Height = 330;
-            m_Panel.Add(window);
-            Global.GUIManager.Add(window);
+            m_Window.Text = "Pause Game";
+            m_Window.Top = 150; 
+            m_Window.Left = 170;
+            m_Window.Width = 450;
+            m_Window.Height = 330;
+            m_Panel.Add(m_Window);
+            Global.GUIManager.Add(m_Window);
             #endregion
 
             #region Initialize Buttons
@@ -83,29 +77,34 @@ namespace Klotski.States
 			//Add it to the
         	m_Panel.Add(m_Help);
         	Global.GUIManager.Add(m_Help);
+
+            //TODO: Fix layout.
         }
 
-        private void PauseChoose(object sender, EventArgs e)
-        {
+        private void PauseChoose(object sender, EventArgs e) {
             //Resume Button
             if (sender == m_PauseButtons[0]) m_Active=false;
 
             //Restart Button
-            //if (sender == m_PauseButtons[1]) ;
+            if (sender == m_PauseButtons[1]) {
+                //Restart previous state
+                Global.StateManager.GetPreviousState(this).Initialize();
 
-            //To title Button
+                //return
+                m_Active = false;
+            }
+
+            //To title Buttonze
             if (sender == m_PauseButtons[2]) Global.StateManager.GoTo(StateID.Title, null);
 
             //Exit Button
             if (sender == m_PauseButtons[3]) Global.StateManager.Quit();
         }
 
-         public override void OnEnter()
-        {
-        }
+         public override void OnEnter() {
+         }
 
-         public override void Update(GameTime time)
-         {
+         public override void Update(GameTime time) {
          }
     }
 }

@@ -29,11 +29,6 @@ namespace Klotski.States {
 		}
 
 		public override void Initialize() {
-            //SpriteManager.Camera.Position = Vector3.Zero;
-            System.Console.WriteLine(SpriteManager.Camera.X);
-            System.Console.WriteLine(SpriteManager.Camera.Y);
-            System.Console.WriteLine(SpriteManager.Camera.Z);
-
 			//Create background sprite
 			Sprite Background = SpriteManager.AddSprite(
 				Global.IMAGE_FOLDER + "Storm1",

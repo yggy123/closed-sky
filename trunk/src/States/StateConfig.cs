@@ -150,7 +150,8 @@ namespace Klotski.States
 			if (sender == m_MenuButtons[1]) {
 				//Create parameter
 				Object[] Parameters = new object[2];
-				Parameters[0] = StateGame.Player.Klotski;
+                Parameters[0] = Player.Klotski;
+                Parameters[0] = Player.BFS;
 				Parameters[1] = GameData.LoadGameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
 
 				//Go to play state

@@ -17,18 +17,20 @@ using Mouse = FlatRedBall.Input.Mouse;
 
 //Class namespace
 namespace Klotski.States {
+    // ReSharper disable InconsistentNaming
+    //Enumeration
+    public enum Player {
+        Klotski,	//Human player
+        DFS,		//AI using DFS method
+        BFS,		//AI using BFS method
+        Storm		//Map creation.
+    }
+
+    // ReSharper restore InconsistentNaming
 	/// <summary>
 	/// The state that handles main gameplay.
 	/// </summary>
-	public class StateGame : State {
-		//Enumeration
-		public enum Player {
-			Klotski,	//Human player
-			DFS,		//AI using DFS method
-			BFS,		//AI using BFS method
-			Storm		//Map creation.
-		}
-
+    public class StateGame : State {
 		//Sky component
 		private Sky		m_Sky;
 		private Layer	m_SkyLayer;
@@ -51,10 +53,17 @@ namespace Klotski.States {
 		//Logics
 		private Player	m_Player;
 		private Ship[,] m_Board;
+        private int     m_BoardWidth;
+        private int     m_BoardHeight;
 		private bool	m_Victory;
 		private bool	m_Initialized;
 		private bool	m_ReadyToUpdate;
 
+		//AI
+		private int			m_Depth;
+		private int			m_MaxDepth;
+		private Stack<Ship>	m_ShipStack;
+		private Stack<int>	m_IteratorStack;
 
 		/// <summary>
 		/// State Game class constructor.
@@ -66,8 +75,14 @@ namespace Klotski.States {
 			m_Victory		= false;
 			m_Initialized	= false;
 			m_ReadyToUpdate	= false;
+            m_BoardWidth    = 0;
+            m_BoardHeight   = 0;
+			m_IteratorStack	= new Stack<int>();
+			m_ShipStack		= new Stack<Ship>();
 
 			//Empties variables
+			m_Depth			= 0;
+			m_MaxDepth		= 0;
 			m_Sky			= null;
 			m_Actor			= null;
 			m_King			= null;
@@ -92,7 +107,7 @@ namespace Klotski.States {
 			if (!m_Initialized) CreateLighting();
 
 			//If has been initialized, remove old ships
-			//if (m_Initialized) foreach (PositionedModel model in m_Layer.Models) SpriteManager.RemovePositionedObject(model);
+            if (m_Initialized) foreach (Ship ship in m_Ships) ship.Remove();
 
 			//Load ships
 			m_Ships = m_Data.LoadShipList(m_Layer);
@@ -103,15 +118,23 @@ namespace Klotski.States {
 			UpdateBoard();
 
 			//Create camera
-			if (!m_Initialized) CreateBirdsView();
+            if (!m_Initialized) CreateBirdsView();
 
-			//TODO: Actor restarting
+			//Create and initialize actor if player
+            if (m_Player == Player.Klotski) {
+                if (m_Initialized) m_Actor.Remove();
+                m_Actor = new Actor(m_Layer);
+                m_Controlled = m_Actor;
+                m_ActiveCamera = m_Controlled.GetCamera();
+                m_Actor.Initialize(m_Ships[0], 3);
+            }
+            else m_ActiveCamera = m_BirdsView;
 
-			//Create and initialize actor
-			m_Actor			= new Actor(m_Layer);
-			m_Controlled	= m_Actor;
-			m_ActiveCamera	= m_Controlled.GetCamera();
-			m_Actor.Initialize(m_Ships[0], 3);
+			//Initialize AI
+			m_Depth		= 0;
+			m_MaxDepth	= 1;
+			m_ShipStack.Clear();
+			m_IteratorStack.Clear();
 
 			//Start BGM
 			Global.SoundManager.PlayBGM(Global.GAME_BGM);
@@ -123,7 +146,10 @@ namespace Klotski.States {
 		/// <summary>
 		/// What happened upon entering the state.
 		/// </summary>
-		public override void OnEnter() { }
+		public override void OnEnter() {
+            //Restore actor's state
+            if (m_Actor != null) m_Actor.Restore();
+        }
 
 		/// <summary>
 		/// What happens when the state got removed.
@@ -150,17 +176,24 @@ namespace Klotski.States {
 		/// Create array of board from the list of ships.
 		/// </summary>
 		private void CreateBoard() {
-			//Get board size
-			int MaxRow		= 1;
-			int MaxColumn	= 1;
-			foreach (Ship ship in m_Ships) {
-				MaxRow = Math.Max(MaxRow, ship.GetRow() + ship.GetHeight());
-				MaxColumn = Math.Max(MaxColumn, ship.GetColumn() + ship.GetWidth());
-			}
+            //If board size is 0
+            if (m_BoardWidth <= 0 && m_BoardHeight <= 0) {
+			    //Get board size
+			    int MaxRow		= 1;
+			    int MaxColumn	= 1;
+			    foreach (Ship ship in m_Ships) {
+				    MaxRow = Math.Max(MaxRow, ship.GetRow() + ship.GetHeight());
+				    MaxColumn = Math.Max(MaxColumn, ship.GetColumn() + ship.GetWidth());
+			    }
+
+                //Set board size
+                m_BoardWidth    = MaxColumn;
+                m_BoardHeight   = MaxRow;
+            }
 
 			//Create board
-			m_Board = new Ship[MaxColumn, MaxRow];
-			for (int x = 0; x < MaxColumn; x++) for (int y = 0; y < MaxRow; y++) m_Board[x, y] = null;
+            m_Board = new Ship[m_BoardWidth, m_BoardHeight];
+            for (int x = 0; x < m_BoardWidth; x++) for (int y = 0; y < m_BoardHeight; y++) m_Board[x, y] = null;
 
 			//For each ship
 			foreach (Ship ship in m_Ships) {
@@ -227,15 +260,18 @@ namespace Klotski.States {
 		/// Create game's graphical interface.
 		/// </summary>
 		private void CreateGUI() {
-			//Create lifebar
-			m_LifeBar		= new LifeBar(Global.GUIManager);
-			m_LifeBar.Left	= Global.LIFEBAR_X;
-			m_LifeBar.Top	= Global.LIFEBAR_Y;
-			m_LifeBar.Init();
+            //If player
+            if (m_Player == Player.Klotski || m_Player == Player.Storm) {
+			    //Create lifebar
+			    m_LifeBar		= new LifeBar(Global.GUIManager);
+			    m_LifeBar.Left	= Global.LIFEBAR_X;
+			    m_LifeBar.Top	= Global.LIFEBAR_Y;
+			    m_LifeBar.Init();
 
-			//Add it
-			m_Panel.Add(m_LifeBar);
-			Global.GUIManager.Add(m_LifeBar);
+			    //Add it
+			    m_Panel.Add(m_LifeBar);
+			    Global.GUIManager.Add(m_LifeBar);
+            }
 		}
 
 		/// <summary>
@@ -321,61 +357,164 @@ namespace Klotski.States {
 			}
 			//Otherwise, do the usual update
 			else {
-				//Check actor collision);
-				foreach (Ship ship in m_Ships) 
-					if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
+                //if player controlled
+                if (m_Player == Player.Klotski || m_Player == Player.Storm) {
+				    //Check actor collision);
+				    foreach (Ship ship in m_Ships) 
+					    if (ship.GetBoundingBox().Intersects(m_Actor.GetBoundingBox())) m_Actor.OnCollision(ship);
+                }
+                //Based on the player ti
+                switch (m_Player) {
+				#region Player controlled
+				case Player.Storm:
+				case Player.Klotski:
+					//Camera switching
+					if (InputManager.Keyboard.KeyPushed(Keys.Tab)) SwitchCamera();
 
-				//Check for input
-				#region Input checking
-				if (InputManager.Keyboard.KeyPushed(Keys.Tab))		SwitchCamera();
-				if (InputManager.Keyboard.KeyPushed(Keys.Escape))	Global.StateManager.GoTo(StateID.Pause, null);
+					//Controlled character switching
+					if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
+						//If block is not moving and not in bird's view
+						if (!m_ReadyToUpdate && m_ActiveCamera != m_BirdsView) {
+							//If currently controlling a ship
+							if (m_Controlled != m_Actor) {
+								//Place actor on top of the ship
+								m_Actor.SetPosition(
+									(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
+									m_Controlled.GetBoundingBox().Max.Y,
+									(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
 
-				//If mouse is clicked
-				#region Change control
-				if (InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton)) {
-					//If block is not moving and no in bird's view
-					if (!m_ReadyToUpdate && m_ActiveCamera != m_BirdsView) {
-						//If currently controlling a ship
-						if (m_Controlled != m_Actor) {
-							//Place actor on top of the ship
-							m_Actor.SetPosition(
-								(m_Controlled.GetBoundingBox().Max.X + m_Controlled.GetBoundingBox().Min.X) / 2.0f,
-								 m_Controlled.GetBoundingBox().Max.Y,
-								(m_Controlled.GetBoundingBox().Max.Z + m_Controlled.GetBoundingBox().Min.Z) / 2.0f);
+								//Return control to actor
+								m_Actor.SetVisibility(true);
+								m_Controlled = m_Actor;
+							} else {
+								//Get the ship below actor
+								Ship Below = GetShipBelowActor();
 
-							//Return control to actor
-							m_Actor.SetVisibility(true);
-							m_Controlled = m_Actor;
-						} else {
-							//Get the ship below actor
-							Ship Below = GetShipBelowActor();
+								//If a ship exist
+								if (Below != null) {
+									//Set as controlled
+									m_Controlled = Below;
 
-							//If a ship exist
-							if (Below != null) {
-								//Set as controlled
-								m_Controlled = Below;
-
-								//Turn off actor
-								m_Actor.SetVisibility(false);
+									//Turn off actor
+									m_Actor.SetVisibility(false);
+								}
 							}
 						}
 					}
-				}
+					break; 
 				#endregion
-				#endregion
+                case Player.BFS:
+					//Create iterator if not exist
+					if (m_IteratorStack.Count <= 0) m_IteratorStack.Push((int)Direction.NegativeY);
+
+					//If
+					if (m_Controlled == null || !((Ship)m_Controlled).IsMoving()) {
+
+						//Get stack info
+						int i = (m_IteratorStack.Peek() - (int) Direction.NegativeY) / 5;
+						int j =  m_IteratorStack.Peek() - (i * 5);
+						m_IteratorStack.Pop();
+
+						//While there's no moving block and iterator hasn't finished
+						while (m_Controlled == null && (i * 5) + j < (m_Ships.Count * 5) + (int) Direction.NegativeY) {
+							while (m_Controlled == null && j <= (int) Direction.PositiveY) {
+								//If the ship contains a movement
+								if (m_Ships[i].GetBackDirection() != (Direction)j) {
+									if (m_Ships[i].GetAvailableMovement().Contains((Direction) j)) {
+										//Move and Set as active
+										m_Controlled = m_Ships[i];
+										m_ShipStack.Push(m_Ships[i]);
+										m_Ships[i].Move((Direction) j);
+										m_Depth++;
+
+										//Save stack
+										j++;
+										if (j > (int) Direction.PositiveY) {
+											j = (int) Direction.NegativeY;
+											i++;
+										}
+										m_IteratorStack.Push((i*5) + j);
+									}
+								}
+
+								//Next direction
+								j++;
+							}
+
+							//Reset j
+							j = (int) Direction.NegativeY;
+
+							//Next
+							i++;
+						}
+
+						//If has iterated through all
+						if (m_Controlled == null && i >= m_Ships.Count) {
+							//Increase max depth if at root
+							if (m_Depth == 0) m_MaxDepth++;
+							else {
+								//Return via last ship
+								m_Controlled = m_ShipStack.Pop();
+								((Ship)m_Controlled).Return();
+								m_Depth--;
+							}
+						}
+					}
+
+                	//If moving ship exist
+                	if (m_Controlled != null) {
+						//Updates
+                		m_Controlled.Update(time);
+
+						//If not moving
+						if (!((Ship)m_Controlled).IsMoving()) {
+							//If maximum depth
+							if (m_Depth >= m_MaxDepth) {
+								((Ship)m_Controlled).Return();
+								m_ShipStack.Pop();
+								m_Depth--;
+							} else {
+								//
+								if (((Ship)m_Controlled).Returning) {
+									((Ship) m_Controlled).Returning = false;
+									m_Controlled = null;
+								} else {
+									//Add a new stack
+									m_IteratorStack.Push((int)Direction.NegativeY);
+									m_Controlled = null;
+								}
+							}
+
+							//Update board
+							CreateBoard();
+							UpdateBoard();
+						}
+                	}
+
+                	break;
+                case Player.DFS:
+                	break;
+                }
 
 				//Updating
 				#region Entity updating
 				//If camera is not bird view
 				if (m_ActiveCamera != m_BirdsView) {
-					//Set active camera
-					m_ActiveCamera = m_Controlled.GetCamera();
+					//Ensure controlled entity exist
+					if (m_Controlled != null) {
+						//Set active camera
+						m_ActiveCamera = m_Controlled.GetCamera();
 
-					//Update controlled entity only
-					m_Controlled.UpdateControl(time);
-					m_Controlled.Update(time);
+						//Update controlled entity only
+						m_Controlled.UpdateControl(time);
+						m_Controlled.Update(time);
+					}
 
-                    //If actor dies
+					//Update life bar
+					m_LifeBar.SetLife(m_Actor.GetLife());
+					m_LifeBar.Invalidate();
+
+                    //If actor dies);
                     if (m_Actor.GetLife() <= 0)
                         m_Active = false;
 				}
@@ -397,6 +536,15 @@ namespace Klotski.States {
 					}
 				}
 				#endregion
+
+                //if escape is pressed
+                if (InputManager.Keyboard.KeyPushed(Keys.Escape)) {
+                    //Save actor's data if exist
+                    if (m_Actor != null) m_Actor.SaveState();
+                    
+                    //Go to pause state
+                    Global.StateManager.GoTo(StateID.Pause, null);
+                }
 			}
 		}
 		
@@ -439,7 +587,7 @@ namespace Klotski.States {
 				if (Available) {
 					for (int x = ship.GetColumn(); x < ship.GetColumn() + ship.GetWidth(); x++)
 						if (m_Board[x, ship.GetRow() + ship.GetHeight()] != null) Available = false;
-					if (Available) { ship.AddMovement(Ship.Direction.PositiveY); }
+					if (Available) { ship.AddMovement(Direction.PositiveY); }
 				}
 
 				//Is ship on bottom row?
@@ -449,7 +597,7 @@ namespace Klotski.States {
 				if (Available) {
 					for (int x = ship.GetColumn(); x < ship.GetColumn() + ship.GetWidth(); x++)
 						if (m_Board[x, ship.GetRow() - 1] != null) Available = false;
-					if (Available) { ship.AddMovement(Ship.Direction.NegativeY); }
+					if (Available) { ship.AddMovement(Direction.NegativeY); }
 				}
 
 				//Is ship on left most row?
@@ -459,7 +607,7 @@ namespace Klotski.States {
 				if (Available) {
 					for (int y = ship.GetRow(); y < ship.GetRow() + ship.GetHeight(); y++)
 						if (m_Board[ship.GetColumn() + ship.GetWidth(), y] != null) Available = false;
-					if (Available) { ship.AddMovement(Ship.Direction.PositiveX); }
+					if (Available) { ship.AddMovement(Direction.PositiveX); }
 				}
 
 				//Is ship on right most row?
@@ -469,7 +617,7 @@ namespace Klotski.States {
 				if (Available) {
 					for (int y = ship.GetRow(); y < ship.GetRow() + ship.GetHeight(); y++)
 						if (m_Board[ship.GetColumn() - 1, y] != null) Available = false;
-					if (Available) { ship.AddMovement(Ship.Direction.NegativeX); }
+					if (Available) { ship.AddMovement(Direction.NegativeX); }
 				}
 				#endregion
 			}
