@@ -176,6 +176,61 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
 
+        //Editor
+        public const string EDITOR_BGM = "Editor.mp3";
+
+        //Editor Buttons
+        public static readonly string[] EDITORBUTTON_MENU = { "Baloon", "Zeppelin_H", "Zeppelin_V" };
+        public const int EDITORBUTTON_LEFT = APP_WIDTH - EDITORBUTTON_WIDTH - 10;
+        public const int EDITORBUTTON_TOP = BOARD_LISTMENU_TOP + 120;
+        public const int EDITORBUTTON_SPACE = 35;
+        public const int EDITORBUTTON_WIDTH = 100;
+
+        //Editor Menu
+        public static readonly string[] EDITOR_MENU = { "Back To Title", "Go Trap the King!" };
+        public const int EDITORMENU_LEFT = EDITORBUTTON_LEFT - 10;
+        public const int EDITORMENU_TOP = EDITORBUTTON_TOP + 115;
+        public const int EDITORMENU_SPACE = EDITORBUTTON_SPACE;
+        public const int EDITORMENU_WIDTH = EDITORBUTTON_WIDTH + 15;
+
+        //Editor GUI
+        public const int EDITORSIDEBARPANEL_TOP = EDITORBUTTON_TOP - 10;
+        public const int EDITORSIDEBARPANEL_WIDTH = EDITORBUTTON_WIDTH + 20;
+        public const int EDITORSIDEBARPANEL_HEIGHT = (3 * EDITORBUTTON_SPACE) + 10;
+        public const int EDITORSIDEBARPANEL_LEFT = APP_WIDTH - EDITORSIDEBARPANEL_WIDTH;
+
+        public const int EDITORSIDEBAR_TOP = EDITORSIDEBARPANEL_TOP - 10;
+        public const int EDITORSIDEBAR_WIDTH = EDITORSIDEBARPANEL_WIDTH + 20;
+        public const int EDITORSIDEBAR_HEIGHT = EDITORSIDEBARPANEL_HEIGHT + 90;
+        public const int EDITORSIDEBAR_LEFT = EDITORSIDEBARPANEL_LEFT - 10;
+
+        public const double EDITORLINE_LIMIT = -50.0f;
+
+        public const int EDITORWINDOW_TOP = 150;
+        public const int EDITORWINDOW_LEFT = 170;
+        public const int EDITORWINDOW_WIDTH = 450;
+        public const int EDITORWINDOW_HEIGHT = 330;
+
+        public const int EDITORHELP_TOP = 135;
+        public const int EDITORHELP_LEFT = 200;
+        public const int EDITORHELP_WIDTH = 390;
+        public const int EDITORHELP_HEIGHT = 280;
+        public const string EDITOR_HELP =
+            "This is Editor State's help.\r\n" +
+            "\r\n" +
+            "OBJECTIVE\r\n" +
+            "Design the winning state condition of the game.\r\n" +
+            "\r\n" +
+            "CONTROLS\r\n" +
+            "Press Tab to make this stupid window go away and back again.\r\n" +
+            "Press WSAD to move the camera.\r\n" +
+            "Click the button and click with LMB in the board to put the\r\n" +
+            "desired baloon.\r\n" +
+            "Click the ship with RMB to delete the ship from the board\r\n" +
+            "Press Go Trap the King! to go wreck the board.\r\n" +
+            "\r\n" +
+            "note : if nothing shows up, you're doing it wrong.";
+
 		//State game
 		public const float	GAMEGAP_WIDTH		= 10.0f;
 		public const float	GAMEGAP_HEIGHT		= 10.0f;
