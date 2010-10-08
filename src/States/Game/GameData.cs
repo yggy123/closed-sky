@@ -34,7 +34,7 @@ namespace Klotski.States.Game {
 			m_ShipsColumn	= new List<int>();
 			m_ShipsWidth	= new List<int>();
 			m_ShipsHeight	= new List<int>();
-			Goal			= 0;
+			Goal			= 1;
 		}
 
         public static void SaveGameData(GameData data, string file) {

@@ -22,7 +22,9 @@ namespace Klotski.Components {
 		private Vector3 m_Movement;
 
         //Data
-        private int m_Life;
+        private int     m_Life;
+        private Vector3 m_SavedVelocity;
+        private Vector3 m_SavedAcceleration;
 
 	    private Ship m_LastShip;
 
@@ -32,10 +34,12 @@ namespace Klotski.Components {
 		/// <param name="layer">Actor's layer</param>
 		public Actor(Layer layer) : base(layer) {
 			//Empties variables
-            m_LastShip  = null;
-			m_RotationX = 0.0f;
-			m_RotationY = 0.0f;
-			m_Movement	= Vector3.Zero;
+            m_LastShip          = null;
+			m_RotationX         = 0.0f;
+			m_RotationY         = 0.0f;
+			m_Movement	        = Vector3.Zero;
+            m_SavedVelocity     = Vector3.Zero;
+            m_SavedAcceleration = Vector3.Zero;
 
 			//Initialize values
             m_Life      = 0;
@@ -71,6 +75,30 @@ namespace Klotski.Components {
 			m_Camera.RotationY = (float)Math.PI;
             m_Camera.RotationZ = 0;
 		}
+        
+        /// <summary>
+        /// Save actor's current data.
+        /// </summary>
+        public void SaveState() {
+            //Save data
+            m_SavedVelocity     = m_Model.Velocity;
+            m_SavedAcceleration = m_Model.Acceleration;
+
+            //Reset
+            m_Model.Velocity        = Vector3.Zero;
+            m_Model.Acceleration    = Vector3.Zero;
+            m_Model.Animate         = false;
+        }
+
+        /// <summary>
+        /// Restore actor's saved data
+        /// </summary>
+        public void Restore() {
+            //Restore velocity and acceleration
+            m_Model.Velocity        = m_SavedVelocity;
+            m_Model.Acceleration    = m_SavedAcceleration;
+            m_Model.Animate         = true;
+        }
 
 		/// <summary>
 		/// Check player input and updates accordingly.
@@ -104,6 +132,8 @@ namespace Klotski.Components {
 
             //Apply gravity
             m_Model.YAcceleration = -Global.GAME_GRAVITY;
+
+            //TODO: Fix collision
 
 			//Moves and rotate character
 			m_Model.Position += m_Movement * Global.ACTOR_VELOCITY * Difference;

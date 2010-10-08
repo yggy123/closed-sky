@@ -2,6 +2,7 @@
 //Namespaces used
 using System.Text;
 using Klotski.Utilities.FMOD;
+using System.Collections.Generic;
 
 //Class namespace
 namespace Klotski.Utilities {
@@ -11,8 +12,9 @@ namespace Klotski.Utilities {
 	public class SoundManager {
 		//Members
 		private readonly FMOD.System m_System;
-		private Sound	m_BGM;
-		private Channel m_BGMChannel;
+		private Sound	    m_BGM;
+		private Channel     m_BGMChannel;
+       // private List<Sound> m_SFXList;
 
 		/// <summary>
 		/// Class constructor.
@@ -128,7 +130,7 @@ namespace Klotski.Utilities {
 			CheckError(m_System.playSound(CHANNELINDEX.REUSE, m_BGM, true, ref m_BGMChannel));
 			CheckError(m_BGMChannel.setPaused(false)); 
 			#endregion
-
+            
 			//Logging info
 			Global.Logger.AddLine("BGM file " + file + " is loaded and played.");
 		}
@@ -140,6 +142,9 @@ namespace Klotski.Utilities {
 			//Pause BGM channel if exist
 			if (m_BGMChannel != null) CheckError(m_BGMChannel.setPaused(true));
 		}
+
+        public void PlaySFX() {
+        }
 
 		/// <summary>
 		/// Updates sound manager.

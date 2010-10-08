@@ -62,6 +62,15 @@ namespace Klotski.Components {
 			m_Model.Y = y;
 			m_Model.Z = z;
 		}
+
+        /// <summary>
+        /// Remove the entity
+        /// </summary>
+        public virtual void Remove() {
+            //Remove model
+            m_Layer.Remove(m_Model);
+            ModelManager.RemoveModel(m_Model);
+        }
 		
 		/// <summary>
 		/// Is playable entity currently playable?

@@ -48,6 +48,8 @@ namespace Klotski.Utilities {
             Content.RootDirectory				= CONTENT_ROOT;
             IsMouseVisible						= SHOW_CURSOR;
             IsFixedTimeStep						= FIXED_STEP;
+            m_Device.IsFullScreen               = Global.APP_FULLSCREEN;
+            m_Device.PreferMultiSampling        = Global.APP_ANTIALIAS;
 			m_Device.PreferredBackBufferWidth	= Global.APP_WIDTH;
 			m_Device.PreferredBackBufferHeight	= Global.APP_HEIGHT;
 			#endregion
@@ -103,6 +105,29 @@ namespace Klotski.Utilities {
 
             //Initialize game class.
             base.Initialize();
+        }
+
+        public State GetPreviousState(State state) {
+            //Check for null
+            if (state == null)          return null;
+            if (m_StateList == null)    return null;
+
+            //Variable
+            LinkedListNode<State> Source  = null;
+            LinkedListNode<State> Current = m_StateList.First;
+
+            //While state still exist
+            while (Current != null) {
+                //Find source
+                if (Current.Value == state) Source = Current;
+                Current = Current.Next;
+            }
+
+            //Return null if there's no previous state
+            if (Source.Previous == null) return null;
+
+            //Otherwise, return previous value
+            return Source.Previous.Value;
         }
 
 		/// <summary>

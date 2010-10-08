@@ -22,6 +22,8 @@ namespace Klotski.Utilities {
 		public const string		APP_NAME = "Klotski";
 		public const StateID	APP_STATE = StateID.Title;
 		public const object[]	APP_PARAMETERS = null;
+		public const bool       APP_FULLSCREEN = false;
+		public const bool       APP_ANTIALIAS  = true;
 		public const float		APPCAM_DEFAULTX = 0.0f;
 		public const float		APPCAM_DEFAULTY = 0.0f;
 		public const float		APPCAM_DEFAULTZ = 40.0f;

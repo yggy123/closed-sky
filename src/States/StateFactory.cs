@@ -49,7 +49,7 @@ namespace Klotski.States {
 				case StateID.Title:	 return new StateTitle();
                 case StateID.Story:  return new StateStory(parameters[0] as string, parameters[1] as string);
 				case StateID.Config: return new StateConfig();
-				case StateID.Game:	 return new StateGame((StateGame.Player)parameters[0], parameters[1] as Game.GameData);
+				case StateID.Game:	 return new StateGame((Player)parameters[0], parameters[1] as Game.GameData);
 				case StateID.Pause:  return new StatePause();
 				case StateID.Editor: return new StateEditor((int)parameters[0], (int)parameters[1]);
 				case StateID.Credit: return new StateStory(parameters[0] as string, parameters[1] as string);
