@@ -11,6 +11,7 @@ namespace Klotski.States {
 		Story,	//Story board
 		Config,	//Config state
 		Game,	//Game state
+        InitEditor,
 		Editor,
 		Credit,	//Credit
 		Pause
@@ -46,14 +47,15 @@ namespace Klotski.States {
 		public State CreateState(StateID id, object[] parameters) {
 			//Return state based on ID
 			switch (id) {
-				case StateID.Title:	 return new StateTitle();
-                case StateID.Story:  return new StateStory(parameters[0] as string, parameters[1] as string);
-				case StateID.Config: return new StateConfig();
-				case StateID.Game:	 return new StateGame((Player)parameters[0], parameters[1] as Game.GameData);
-				case StateID.Pause:  return new StatePause();
-				case StateID.Editor: return new StateEditor((int)parameters[0], (int)parameters[1]);
-				case StateID.Credit: return new StateStory(parameters[0] as string, parameters[1] as string);
-				default:			throw new Exception(Global.UNKNOWNSTATE_ERROR);
+				case StateID.Title:	        return new StateTitle();
+                case StateID.Story:         return new StateStory(parameters[0] as string, parameters[1] as string);
+				case StateID.Config:        return new StateConfig();
+				case StateID.Game:	        return new StateGame((Player)parameters[0], parameters[1] as Game.GameData);
+				case StateID.Pause:         return new StatePause();
+                case StateID.InitEditor:    return new StateInitEditor();
+				case StateID.Editor:        return new StateEditor((int)parameters[0], (int)parameters[1]);
+				case StateID.Credit:        return new StateStory(parameters[0] as string, parameters[1] as string);
+				default:			        throw new Exception(Global.UNKNOWNSTATE_ERROR);
 			}
 		}
 	}
