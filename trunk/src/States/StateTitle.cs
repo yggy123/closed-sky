@@ -73,6 +73,9 @@ namespace Klotski.States {
             //Prepare parameter
 		    object[] Parameters;
 
+            //Disable buttons
+            foreach (CustomButton C in m_Buttons) C.Enabled = false;
+
             if (sender == m_Buttons[0]) {
                 //Create parameter
                 Parameters      = new object[2];
@@ -84,13 +87,8 @@ namespace Klotski.States {
 			}
 
 			if (sender == m_Buttons[1]) {
-				//Create parameter
-				Parameters = new object[2];
-				Parameters[0] = 5;
-				Parameters[1] = 4;
-
-				//Go to story
-				Global.StateManager.GoTo(StateID.Editor, Parameters);
+				//Go initialize editor
+				Global.StateManager.GoTo(StateID.InitEditor, null);
 			}
 
             if (sender == m_Buttons[2]) {
@@ -106,8 +104,10 @@ namespace Klotski.States {
 		}
 
 		public override void OnEnter() {
-			//Play song
-			Global.SoundManager.PlayBGM(Global.TITLE_BGM);
+                //Enable buttons
+                foreach (CustomButton C in m_Buttons) C.Enabled = true;
+                //Play song
+                Global.SoundManager.PlayBGM(Global.TITLE_BGM);
 		}
 
 		public override void Update(GameTime time) {

@@ -176,6 +176,36 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
 
+        //Init Editor
+        public static readonly string[] INITEDITOR_MENU = { "Cancel", "Be The Storm"};
+
+        public const int INITEDITORWINDOW_TOP = 350;
+        public const int INITEDITORWINDOW_LEFT = 300;
+        public const int INITEDITORWINDOW_WIDTH = 350;
+        public const int INITEDITORWINDOW_HEIGHT = 180;
+
+        public const int INITEDITOR_TOP = 485;
+        public const int INITEDITOR_LEFT = 410;
+        public const int INITEDITOR_SPACE = 25;
+        public const int INITEDITOR_WIDTH = 100;
+
+        public const int INITCOMBO_TOP = 423;
+        public const int INITCOMBO_LEFT = 390;
+        public const int INITCOMBO_SPACE = 25;
+        public const int INITCOMBO_WIDTH = 100;
+
+        public const int INITEDITORLABEL_TOP = 280;
+        public const int INITEDITORLABEL_LEFT = 325;
+        public const int INITEDITORLABEL_HEIGHT = 300;
+        public const int INITEDITORLABEL_WIDTH = 300;
+        public const string INITEDITORLABEL_TEXT =
+                "You can input your desired board tile space here.\r\n" +
+                "\r\n" +
+                "\r\n" +
+                "Height :\r\n" +
+                "\r\n" +
+                "Width  :\r\n";
+
         //Editor
         public const string EDITOR_BGM = "Editor.mp3";
 
@@ -209,7 +239,7 @@ namespace Klotski.Utilities {
         public const int EDITORWINDOW_TOP = 150;
         public const int EDITORWINDOW_LEFT = 170;
         public const int EDITORWINDOW_WIDTH = 450;
-        public const int EDITORWINDOW_HEIGHT = 330;
+        public const int EDITORWINDOW_HEIGHT = 235;
 
         public const int EDITORHELP_TOP = 135;
         public const int EDITORHELP_LEFT = 200;

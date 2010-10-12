@@ -222,6 +222,7 @@ namespace Klotski.States
             m_SideBar.Left = Global.EDITORSIDEBAR_LEFT;
             m_SideBar.Width = Global.EDITORSIDEBAR_WIDTH;
             m_SideBar.Height = Global.EDITORSIDEBAR_HEIGHT;
+
             m_Panel.Add(m_SideBar);
             Global.GUIManager.Add(m_SideBar);
 
@@ -231,6 +232,8 @@ namespace Klotski.States
             m_SideBarPanel.Left = Global.EDITORSIDEBARPANEL_LEFT;
             m_SideBarPanel.Width = Global.EDITORSIDEBARPANEL_WIDTH;
             m_SideBarPanel.Height = Global.EDITORSIDEBARPANEL_HEIGHT;
+
+            m_SideBar.Add(m_SideBarPanel);
             m_Panel.Add(m_SideBarPanel);
             Global.GUIManager.Add(m_SideBarPanel);
 
@@ -247,6 +250,7 @@ namespace Klotski.States
                 m_Buttons[i].Init();
 
                 //Add the buttons
+                m_SideBarPanel.Add(m_Buttons[i]);
                 m_Panel.Add(m_Buttons[i]);
                 Global.GUIManager.Add(m_Buttons[i]);
 
@@ -267,6 +271,7 @@ namespace Klotski.States
                 m_MenuButtons[i].Init();
 
                 //Add the buttons
+                m_SideBar.Add(m_MenuButtons[i]);
                 m_Panel.Add(m_MenuButtons[i]);
                 Global.GUIManager.Add(m_MenuButtons[i]);
 
@@ -279,8 +284,8 @@ namespace Klotski.States
             m_Window.Init();
             m_Window.CloseButtonVisible = false;
             m_Window.Movable = false;
-            m_Window.StayOnBack = true;
             m_Window.Resizable = false;
+            m_Window.StayOnBack = true;
             m_Window.Visible = false;
 
             m_Window.Text = "Editor Help";
@@ -302,7 +307,8 @@ namespace Klotski.States
             m_Help.Height = Global.EDITORHELP_HEIGHT;
 
 
-            //Add it to the
+            //Add it 
+            m_Window.Add(m_Help);
             m_Panel.Add(m_Help);
             Global.GUIManager.Add(m_Help);
         }
