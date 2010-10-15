@@ -39,6 +39,7 @@ namespace Klotski.Utilities {
 		public const string CONTENT_FOLDER = "Content/";
 		public const string LEVEL_FOLDER = CONTENT_FOLDER + "Levels/";
 		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
+        public const string RANK_FOLDER = CONTENT_FOLDER + "Images/Rank/";    
 		public const string MODEL_FOLDER = CONTENT_FOLDER + "Models/";
 		public const string BGM_FOLDER = CONTENT_FOLDER + "Audio/BGM/";
 		public const string LEVEL_EXTENSION = ".sky";
@@ -164,10 +165,10 @@ namespace Klotski.Utilities {
         public const int HEROBUTTON_LEFT = 50;
         public const int HEROBUTTON_TOP = 50;
         public const int HEROBUTTON_SPACE = HEROBUTTON_HEIGHT + 24;
-        public const int HEROBUTTON_WIDTH = 400;
+        public const int HEROBUTTON_WIDTH = 370;
         public const int HEROBUTTON_HEIGHT = 150;
-        public const int HEROBUTTON_IMAGEWIDTH = 115;
-        public const int HEROBUTTON_IMAGEHEIGHT = 115;
+        public const int HEROBUTTON_IMAGEWIDTH = 150;
+        public const int HEROBUTTON_IMAGEHEIGHT = 125;
 
         //Config::MenuButton
         public static readonly string[] CONFIG_MENU = { "Back", "Go Save The King!" };
@@ -321,6 +322,7 @@ namespace Klotski.Utilities {
 			"While in control of a balloon, you\r\n" +
 			"can move it with WASD buttons.";
 
+      
 
 	    //Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";

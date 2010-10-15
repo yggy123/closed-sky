@@ -41,7 +41,7 @@ namespace Klotski.States
         {
             //Create background sprite
             Sprite Background = SpriteManager.AddSprite(
-                Global.IMAGE_FOLDER + "Storm2",
+                Global.IMAGE_FOLDER + "Storm3",
                 FlatRedBallServices.GlobalContentManager,
                 m_Layer);
 
@@ -54,12 +54,13 @@ namespace Klotski.States
             for (int i = 0; i < m_HeroButtons.Length; i++)
             {
                 //Create buttons
+                string a = (i+1).ToString();
                 m_HeroButtons[i] = new HeroButton(
                     Global.GUIManager,
                     Global.HEROBUTTON_MENU[i],
                     Global.HEROBUTTON_LEFT,
                     Global.HEROBUTTON_TOP + (i * Global.HEROBUTTON_SPACE),
-                    "Images/HeroImage",
+                    "Images/HeroImage" + a,
                     Global.HEROBUTTON_INFO[i]);
                 m_HeroButtons[i].Init();
 
