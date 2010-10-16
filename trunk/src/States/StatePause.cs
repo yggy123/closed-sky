@@ -73,7 +73,6 @@ namespace Klotski.States
         	m_Help.Left = 200;
         	m_Help.Width = 300;
         	m_Help.Height = 280;          
-			
 			//Add it to the
         	m_Panel.Add(m_Help);
         	Global.GUIManager.Add(m_Help);
