@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using TomShane.Neoforce.Controls;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 //Application namespace
 namespace Klotski.Utilities {
@@ -52,6 +54,7 @@ namespace Klotski.Utilities {
             m_Device.PreferMultiSampling        = Global.APP_ANTIALIAS;
 			m_Device.PreferredBackBufferWidth	= Global.APP_WIDTH;
 			m_Device.PreferredBackBufferHeight	= Global.APP_HEIGHT;
+
 			#endregion
 
 			//Create GUI Manager

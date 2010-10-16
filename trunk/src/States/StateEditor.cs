@@ -127,15 +127,14 @@ namespace Klotski.States
         /// <summary>
         /// Creates a skysphere
         /// </summary>
-        private void CreateSky()
-        {
+        private void CreateSky() {
             //Add a sky layer under main layer
             Layer Temp = SpriteManager.AddLayer();
             m_SkyLayer = m_Layer;
             m_Layer = Temp;
 
             //Create sky
-            m_Sky = new Sky(Global.TEXTURE_FOLDER + "Sky");
+            m_Sky = new Sky(Global.EDITOR_SKY);
             SpriteManager.AddDrawableBatch(m_Sky);
             SpriteManager.AddToLayer(m_Sky, m_SkyLayer);
         }
@@ -143,8 +142,7 @@ namespace Klotski.States
         /// <summary>
         /// Configures global lighting.
         /// </summary>
-        private void CreateLighting()
-        {
+        private void CreateLighting() {
             //Turn on lighting
             FlatRedBall.Graphics.Renderer.LightingEnabled = true;
 
@@ -222,7 +220,6 @@ namespace Klotski.States
             m_SideBar.Left = Global.EDITORSIDEBAR_LEFT;
             m_SideBar.Width = Global.EDITORSIDEBAR_WIDTH;
             m_SideBar.Height = Global.EDITORSIDEBAR_HEIGHT;
-
             m_Panel.Add(m_SideBar);
             Global.GUIManager.Add(m_SideBar);
 
@@ -232,8 +229,6 @@ namespace Klotski.States
             m_SideBarPanel.Left = Global.EDITORSIDEBARPANEL_LEFT;
             m_SideBarPanel.Width = Global.EDITORSIDEBARPANEL_WIDTH;
             m_SideBarPanel.Height = Global.EDITORSIDEBARPANEL_HEIGHT;
-
-            m_SideBar.Add(m_SideBarPanel);
             m_Panel.Add(m_SideBarPanel);
             Global.GUIManager.Add(m_SideBarPanel);
 
@@ -250,7 +245,6 @@ namespace Klotski.States
                 m_Buttons[i].Init();
 
                 //Add the buttons
-                m_SideBarPanel.Add(m_Buttons[i]);
                 m_Panel.Add(m_Buttons[i]);
                 Global.GUIManager.Add(m_Buttons[i]);
 
@@ -271,7 +265,6 @@ namespace Klotski.States
                 m_MenuButtons[i].Init();
 
                 //Add the buttons
-                m_SideBar.Add(m_MenuButtons[i]);
                 m_Panel.Add(m_MenuButtons[i]);
                 Global.GUIManager.Add(m_MenuButtons[i]);
 
@@ -284,8 +277,8 @@ namespace Klotski.States
             m_Window.Init();
             m_Window.CloseButtonVisible = false;
             m_Window.Movable = false;
-            m_Window.Resizable = false;
             m_Window.StayOnBack = true;
+            m_Window.Resizable = false;
             m_Window.Visible = false;
 
             m_Window.Text = "Editor Help";
@@ -307,8 +300,7 @@ namespace Klotski.States
             m_Help.Height = Global.EDITORHELP_HEIGHT;
 
 
-            //Add it 
-            m_Window.Add(m_Help);
+            //Add it to the
             m_Panel.Add(m_Help);
             Global.GUIManager.Add(m_Help);
         }

@@ -30,10 +30,7 @@ namespace Klotski.States {
 
 		public override void Initialize() {
 			//Create background sprite
-			Sprite Background = SpriteManager.AddSprite(
-				Global.IMAGE_FOLDER + "Storm1",
-				FlatRedBallServices.GlobalContentManager,
-				m_Layer);
+			Sprite Background = SpriteManager.AddSprite(Global.STORY_BG, FlatRedBallServices.GlobalContentManager, m_Layer);
 
 			//Resize sprite
 			Background.ScaleX = Background.Texture.Width / SpriteManager.Camera.PixelsPerUnitAt(0) / 2.0f;

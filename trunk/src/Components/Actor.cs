@@ -5,7 +5,9 @@ using Klotski.Utilities;
 using FlatRedBall.Input;
 using FlatRedBall.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using FlatRedBall.Graphics.Lighting;
 
 //Class namespace
 namespace Klotski.Components {
@@ -22,9 +24,10 @@ namespace Klotski.Components {
 		private Vector3 m_Movement;
 
         //Data
-        private int     m_Life;
-        private Vector3 m_SavedVelocity;
-        private Vector3 m_SavedAcceleration;
+		private int			m_Life;
+		private PointLight	m_Light;
+        private Vector3		m_SavedVelocity;
+        private Vector3		m_SavedAcceleration;
 
 	    private Ship m_LastShip;
 
@@ -46,6 +49,12 @@ namespace Klotski.Components {
 			m_Jumping	= false;
 			m_Forward	= new Vector3(0.0f, 0.0f, 1.0f);
 			m_Sideway	= new Vector3(-1.0f, 0.0f, 0.0f);
+
+			//Create light
+			m_Light					= new PointLight();
+			m_Light.Range			= 40.0f;
+			m_Light.DiffuseColor	= new Vector3(1.0f, 1.0f, 1.0f);
+			m_Light.SpecularColor	= new Vector3(0.3f, 0.3f, 0.3f);
 		}
 
 	    /// <summary>
@@ -73,7 +82,17 @@ namespace Klotski.Components {
 			//Set camera orientation
 			m_Camera.RotationX = 0;
 			m_Camera.RotationY = (float)Math.PI;
-            m_Camera.RotationZ = 0;
+			m_Camera.RotationZ = 0;
+
+			//Attach light
+	    	m_Light.Position	= m_Model.Position;
+	    	m_Light.Position.Y += 5.0f;
+	    	m_Light.Position.Z += 5.0f;
+			m_Light.AttachTo(m_Model, true);
+	    }
+
+		public PointLight GetLight() {
+			return m_Light;
 		}
         
         /// <summary>
@@ -133,8 +152,6 @@ namespace Klotski.Components {
             //Apply gravity
             m_Model.YAcceleration = -Global.GAME_GRAVITY;
 
-            //TODO: Fix collision
-
 			//Moves and rotate character
 			m_Model.Position += m_Movement * Global.ACTOR_VELOCITY * Difference;
 			if (m_Movement.LengthSquared() > 0) m_Model.RotationY = (float)Math.Atan2(m_Movement.X, m_Movement.Z);
@@ -150,7 +167,8 @@ namespace Klotski.Components {
                 m_Life--;
 
                 //Return to last ship visited
-                m_Model.Position = m_LastShip.GetCenterTop();
+                m_Model.Position	= m_LastShip.GetCenterTop();
+            	m_Model.Position.Y += 5.0f;
             }
 
 			//Updates direction
@@ -200,11 +218,17 @@ namespace Klotski.Components {
 		}
 
 	    public void SetPosition(float f, float f1, float f2) {
-	        m_Model.Position = new Vector3(f, f1, f2);
+	        m_Model.Position		= new Vector3(f, f1, f2);
+			m_Model.Velocity		= Vector3.Zero;
+			m_Model.Acceleration	= Vector3.Zero;
 	    }
 
 	    public int GetLife() {
             return m_Life;
 	    }
+
+		public void SetLife(int life) {
+			m_Life = life;
+		}
 	}
 }
