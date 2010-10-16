@@ -696,7 +696,7 @@ namespace Klotski.States {
 						//Create parameter
 						object[] Parameters = new object[4];
 
-						Parameters[0] = 0;
+						Parameters[0] = -1;
 						Parameters[1] = new TimeSpan();
 						Parameters[2] = 0;
 						Parameters[3] = 0;
@@ -747,8 +747,8 @@ namespace Klotski.States {
 			if (m_Board == null) return;
 
 			//Checks winning condition if not editor
-			if (m_Player != Player.Storm && m_Board[m_Data.Goal, 0] != null)
-				if (m_Board[m_Data.Goal, 0].IsKing()) {
+            if (m_Player != Player.Storm && m_Board[m_Data.Goal, 0] != null && m_Board[m_Data.Goal + 1, 0] != null)
+				if (m_Board[m_Data.Goal, 0].IsKing() && m_Board[m_Data.Goal + 1, 0].IsKing()) {
 					//Wins
 					m_Victory	= true;
 					m_King		= m_Board[m_Data.Goal, 0];
