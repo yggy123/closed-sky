@@ -1,13 +1,13 @@
 ﻿//ReSharper disable LoopCanBeConvertedToQuery
 
 //Namespaces used
+using System;
+using System.IO;
+using System.Xml.Serialization;
+using System.Collections.Generic;
 using Klotski.Utilities;
 using Klotski.Components;
 using FlatRedBall.Graphics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Serialization;
 
 //Application namespace
 namespace Klotski.States.Game {
@@ -63,6 +63,67 @@ namespace Klotski.States.Game {
             }
             return ReturnData;
         }
+
+		/// <summary>
+		/// Checks whether the two state is equals.
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public bool Equals(GameData data) {
+			//Set variable
+			bool Equal = true;
+
+			//Ensure there's a same amount of ship
+			Equal = (m_ShipsRow.Count == data.m_ShipsRow.Count);
+
+			//If equal
+			if (Equal) {
+				//Clone data
+				List<int> ShipsRow		= new List<int>();
+				List<int> ShipsColumn	= new List<int>();
+				List<int> ShipsWidth	= new List<int>();
+				List<int> ShipsHeight	= new List<int>();
+				foreach (int row	in data.m_ShipsRow)		ShipsRow.Add(row);
+				foreach (int column in data.m_ShipsColumn)	ShipsColumn.Add(column);
+				foreach (int width	in data.m_ShipsWidth)	ShipsWidth.Add(width);
+				foreach (int height in data.m_ShipsHeight)	ShipsHeight.Add(height);
+
+				//While equal and still in list
+				int x = 0;
+				while (Equal && x < m_ShipsRow.Count) {
+					//Set default value
+					Equal = false;
+
+					//For each ship
+					for (int y = 0; y < ShipsRow.Count; y++) {
+						//Find the other row
+						if (m_ShipsRow[x] == ShipsRow[y]) {
+							//If the rest equal
+							if (m_ShipsColumn[x]	== ShipsColumn[y] &&
+								m_ShipsWidth[x]		== ShipsWidth[y]  &&
+								m_ShipsHeight[x]	== ShipsHeight[y]) {
+								//Deletes it from the list
+								ShipsRow.RemoveAt(y);
+								ShipsColumn.RemoveAt(y);
+								ShipsHeight.RemoveAt(y);
+								ShipsWidth.RemoveAt(y);
+
+								//Exit current loop
+								Equal	= true;
+								y		= ShipsRow.Count;
+							}
+						}
+					}
+
+					//Next ship
+					x++;
+				}
+			}
+
+			//Return equality
+			return Equal;
+
+		}
 
 		/// <summary>
 		/// Stores ship data.

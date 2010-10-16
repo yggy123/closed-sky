@@ -15,7 +15,8 @@ namespace Klotski.Controls {
 		protected string m_Info;//string for Hero Information
         protected string m_Image;//string representing Hero Image File
 
-        protected SpriteFont    m_Font;
+		protected SpriteFont    m_Font;
+		protected SpriteFont    m_DescFont;
         protected Texture2D     m_HeroImage;
         protected Texture2D     m_ButtonTexture;
         protected Texture2D     m_Layer;
@@ -47,6 +48,7 @@ namespace Klotski.Controls {
 
             //Nulling Stuffs
             m_Font          = null;
+			m_DescFont		= null;
             m_HeroImage     = null;
             m_ButtonTexture = null;
             m_Layer         = null;
@@ -57,7 +59,8 @@ namespace Klotski.Controls {
 			base.Init();
 
             //Init Font
-            m_Font = Global.StateManager.Content.Load<SpriteFont>(Global.HEROBUTTON_FONT);
+            m_Font		= Global.StateManager.Content.Load<SpriteFont>(Global.HEROBUTTON_FONT);
+			m_DescFont	= Global.StateManager.Content.Load<SpriteFont>(Global.HEROBUTTON_DESCFONT);
 
             //Init Button Texture
             m_ButtonTexture = Global.StateManager.Content.Load<Texture2D>(Global.HEROBUTTON_TEXTURE);
@@ -100,7 +103,7 @@ namespace Klotski.Controls {
 
             renderer.DrawString(m_Font, Text, HeroRect.X + 135, HeroRect.Y, FontColor);
 
-            if (m_InfoVisible) renderer.DrawString(m_Font, m_Info, HeroRect.X + 135, HeroRect.Y + 30, FontColor);
+            if (m_InfoVisible || m_Highlight) renderer.DrawString(m_DescFont, m_Info, HeroRect.X + 156, HeroRect.Y + 30, FontColor);
 
             //Draw Overlay
             if (ControlState == ControlState.Hovered || m_Highlight) renderer.Draw(m_Layer, Rect, Color.White);

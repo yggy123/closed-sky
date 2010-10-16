@@ -30,10 +30,13 @@ namespace Klotski.Components {
 		protected int m_Height;
 
 		//Movement
+		protected int				m_Move;
 		protected float				m_MoveTime;
 		protected Vector3           m_Forward;
 		protected Direction			m_Movement;
 	    protected List<Direction>	m_Available;
+
+		protected static float m_Speed;
 
 		//AI
 		protected Stack<Ship>		m_ShipStack;
@@ -68,6 +71,10 @@ namespace Klotski.Components {
 		}
 
         public void Initialize() {
+			//
+        	m_Move = 0;
+        	m_Speed = 1.0f;
+
 			//Get model name
         	string model = Global.BLOCKS_FOLDER + "Balloon" + m_Width + m_Height;
 
@@ -93,6 +100,14 @@ namespace Klotski.Components {
 			//Logging
 			if (Global.Logger != null) Global.Logger.AddLine("Ship created.");
         }
+
+		protected override void CalculateAABB() {
+			//Create default AABB
+			m_AABB = new BoundingBox(new Vector3(0, -20, 0), new Vector3(40, 4, 40));
+
+			if (m_Width == 2)	m_AABB.Max.X += 60;
+			if (m_Height == 2)	m_AABB.Max.Z += 60;
+		}
 
 		public bool IsMoving() {
 			return (m_Movement != Direction.None);
@@ -130,12 +145,23 @@ namespace Klotski.Components {
 			return m_Height;
 		}
 
+		public int GetMoveNumber() {
+			return m_Move;
+		}
+
         public Vector3 GetCenterTop() {
             return new Vector3(
                 ((m_AABB.Min.X + m_AABB.Max.X) / 2.0f)  + m_Model.Position.X,
                   m_AABB.Max.Y                          + m_Model.Position.Y,
                 ((m_AABB.Min.Z + m_AABB.Max.Z) / 2.0f)  + m_Model.Position.Z);
         }
+
+		public static void IncreaseSpeed() {
+			if (m_Speed < 5.0f) m_Speed += 1.0f;
+		}
+		public static void DecreaseSpeed() {
+			if (m_Speed > 1.0f) m_Speed -= 1.0f;
+		}
 
         public List<Direction> GetAvailableMovement()
         {
@@ -184,7 +210,7 @@ namespace Klotski.Components {
 			//If moving
 			if (m_Movement != Direction.None) {
 				//Calculate time difference
-				float Difference  = time.ElapsedGameTime.Milliseconds / 1000.0f;
+				float Difference  = time.ElapsedGameTime.Milliseconds / 1000.0f * m_Speed;
 				m_MoveTime		 += Difference;
 
 				//Set movement direction on movement
@@ -204,7 +230,7 @@ namespace Klotski.Components {
 				}
 
 				//If has reached limit
-				if (m_MoveTime >= 0.5f) {
+				if (m_MoveTime >= 1.0f) {
 					//Change row and collumn
 					switch (m_Movement) {
 					case Direction.PositiveX: { m_Column++; break; }
@@ -220,6 +246,8 @@ namespace Klotski.Components {
 					//Reset
 					m_Movement = Direction.None;
 					m_MoveTime = 0;
+
+					m_Move++;
 				}
 			}
 

@@ -10,14 +10,15 @@ namespace Klotski.States
         private Window		m_Window;
         private Button[]	m_PauseButtons;
         private Label		m_Help;
+		private bool		m_Editor;
 
         //Class Constructor
-        public StatePause()
-            : base(StateID.Pause)
+        public StatePause(bool editor) : base(StateID.Pause)
         {
             //Draw cursor
             m_VisibleCursor = true;
         	m_PopUp = true;
+        	m_Editor = editor;
             
             //Nulling value
             m_Help = null;
@@ -45,9 +46,8 @@ namespace Klotski.States
             #endregion
 
             #region Initialize Buttons
-            m_PauseButtons = new Button[Global.PAUSE_MENU.Length];
-            for (int i = 0; i < m_PauseButtons.Length; i++)
-            {
+			m_PauseButtons = new Button[(m_Editor) ? 4 : 3];
+			for (int i = 0; i < m_PauseButtons.Length; i++) {
                 //Create buttons
                 m_PauseButtons[i] = new Button(Global.GUIManager);
                 m_PauseButtons[i].Text = Global.PAUSE_MENU[i];
@@ -83,22 +83,10 @@ namespace Klotski.States
 
         private void PauseChoose(object sender, EventArgs e) {
             //Resume Button
-            if (sender == m_PauseButtons[0]) m_Active=false;
-
-            //Restart Button
-            if (sender == m_PauseButtons[1]) {
-                //Restart previous state
-                Global.StateManager.GetPreviousState(this).Initialize();
-
-                //return
-                m_Active = false;
-            }
-
-            //To title Buttonze
-            if (sender == m_PauseButtons[2]) Global.StateManager.GoTo(StateID.Title, null);
-
-            //Exit Button
-            if (sender == m_PauseButtons[3]) Global.StateManager.Quit();
+			if (sender == m_PauseButtons[0]) m_Active = false;
+			else if (sender == m_PauseButtons[1]) Global.StateManager.GoTo(StateID.Title, null);
+			else if (sender == m_PauseButtons[2]) Global.StateManager.Quit();
+			else (Global.StateManager.GetPreviousState(this) as StateGame).SaveMap();
         }
 
          public override void OnEnter() {

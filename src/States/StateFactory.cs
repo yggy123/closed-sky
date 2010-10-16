@@ -12,6 +12,7 @@ namespace Klotski.States {
 		Config,	//Config state
 		Game,	//Game state
         InitEditor,
+		GameOver,
 		Editor,
 		Credit,	//Credit
 		Pause
@@ -51,7 +52,8 @@ namespace Klotski.States {
                 case StateID.Story:         return new StateStory(parameters[0] as string, parameters[1] as string);
 				case StateID.Config:        return new StateConfig();
 				case StateID.Game:	        return new StateGame((Player)parameters[0], parameters[1] as Game.GameData);
-				case StateID.Pause:         return new StatePause();
+				case StateID.GameOver:      return new StateGameOver((int)parameters[0], (TimeSpan)parameters[1], (int)parameters[2], (int)parameters[3]);
+				case StateID.Pause:         return new StatePause((bool)parameters[0]);
                 case StateID.InitEditor:    return new StateInitEditor();
 				case StateID.Editor:        return new StateEditor((int)parameters[0], (int)parameters[1]);
 				case StateID.Credit:        return new StateStory(parameters[0] as string, parameters[1] as string);

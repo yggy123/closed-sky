@@ -25,9 +25,7 @@ namespace Klotski.States
         /// <summary>
         /// Class constructor.
         /// </summary>
-        public StateConfig()
-            : base(StateID.Config)
-        {
+        public StateConfig() : base(StateID.Config) {
             //Draw cursor
             m_VisibleCursor = true;
 
@@ -40,10 +38,7 @@ namespace Klotski.States
         public override void Initialize()
         {
             //Create background sprite
-            Sprite Background = SpriteManager.AddSprite(
-                Global.IMAGE_FOLDER + "Storm3",
-                FlatRedBallServices.GlobalContentManager,
-                m_Layer);
+            Sprite Background = SpriteManager.AddSprite(Global.CONFIG_BG, FlatRedBallServices.GlobalContentManager, m_Layer);
 
             //Resize sprite
             Background.ScaleX = Background.Texture.Width / SpriteManager.Camera.PixelsPerUnitAt(0) / 2.0f;
@@ -54,13 +49,12 @@ namespace Klotski.States
             for (int i = 0; i < m_HeroButtons.Length; i++)
             {
                 //Create buttons
-                string a = (i+1).ToString();
                 m_HeroButtons[i] = new HeroButton(
                     Global.GUIManager,
                     Global.HEROBUTTON_MENU[i],
                     Global.HEROBUTTON_LEFT,
                     Global.HEROBUTTON_TOP + (i * Global.HEROBUTTON_SPACE),
-                    "Images/HeroImage" + a,
+                    "Images/HeroImage" + i,
                     Global.HEROBUTTON_INFO[i]);
                 m_HeroButtons[i].Init();
 
@@ -129,18 +123,10 @@ namespace Klotski.States
 
         }
 
-		private void HeroChoose(object sender, TomShane.Neoforce.Controls.EventArgs e)
-        {
-            foreach (HeroButton h in m_HeroButtons) {
-                h.m_Highlight = false;
-            }
-
+		private void HeroChoose(object sender, TomShane.Neoforce.Controls.EventArgs e) {
+            foreach (HeroButton h in m_HeroButtons) h.m_Highlight = false;
             ((HeroButton)sender).m_Highlight = true;
-
-            foreach (HeroButton h in m_HeroButtons)
-            {
-                h.Invalidate();
-            }
+            foreach (HeroButton h in m_HeroButtons) h.Invalidate();
         }
 
 		private void MenuChoose(object sender, TomShane.Neoforce.Controls.EventArgs e) {
@@ -151,8 +137,7 @@ namespace Klotski.States
 			if (sender == m_MenuButtons[1]) {
 				//Create parameter
 				Object[] Parameters = new object[2];
-                //Parameters[0] = Player.Klotski;
-                Parameters[0] = Player.BFS;
+				for (int i = 0; i < 3; i++) if (m_HeroButtons[i].m_Highlight) Parameters[0] = (Player) i;
 				Parameters[1] = GameData.LoadGameData(m_FileListBox.Items[m_FileListBox.ItemIndex] as string);
 
 				//Go to play state
@@ -160,10 +145,8 @@ namespace Klotski.States
             }
         }
 
-        public override void OnEnter() {
-        }
+        public override void OnEnter() {}
 
-        public override void Update(GameTime time) {
-        }
+        public override void Update(GameTime time) {}
     }
 }

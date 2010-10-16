@@ -111,7 +111,7 @@ namespace Klotski.Components {
 		/// <summary>
 		/// Calculate m_AABB
 		/// </summary>
-		protected void CalculateAABB() {
+		protected virtual void CalculateAABB() {
 			//Initialize AABB
 			m_AABB = new BoundingBox(Vector3.Zero, Vector3.Zero);
 
