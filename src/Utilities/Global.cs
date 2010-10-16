@@ -39,7 +39,6 @@ namespace Klotski.Utilities {
 		public const string CONTENT_FOLDER = "Content/";
 		public const string LEVEL_FOLDER = CONTENT_FOLDER + "Levels/";
 		public const string IMAGE_FOLDER = CONTENT_FOLDER + "Images/";
-        public const string RANK_FOLDER = CONTENT_FOLDER + "Images/Rank/";    
 		public const string MODEL_FOLDER = CONTENT_FOLDER + "Models/";
 		public const string BGM_FOLDER = CONTENT_FOLDER + "Audio/BGM/";
 		public const string LEVEL_EXTENSION = ".sky";
@@ -69,6 +68,7 @@ namespace Klotski.Utilities {
 		public const int				TITLE_MENU_LEFT = 24;
 		public const int				TITLE_MENU_SPACE = 52;
 		public const string				TITLE_MENU_FONT = FONT_FOLDER + "Tahoma";
+		public const string				TITLE_BG = IMAGE_FOLDER + "Storm2";
 		public const string				TITLE_BGM = "Title.mp3";
 
 		//Story
@@ -77,8 +77,9 @@ namespace Klotski.Utilities {
 		public const float	STORY_SPEED = 0.6f;
 		public const float	STORY_ANGLE = (float)(Math.PI * -0.25f);
 		public const float	STORY_TIME = 27.0f;
-		public const string	STORY_FONT = "TahomaBitmap";
+		public const string STORY_BG = IMAGE_FOLDER + "Storm1";
 		public const string	STORY_BGM = "Story.mp3";
+		public const string	STORY_FONT = "TahomaBitmap";
 	    public const string STORY_CAPTION = "Long time ago, in a kingdom far, far away...";
 		public const string STORY_TEXT =
 			"It was time for the BlueSky Festival.\r\n" +
@@ -144,10 +145,11 @@ namespace Klotski.Utilities {
 	        "\r\n";
 
 		//State Config
-		public const int CONFIGLIST_X = 560;
-		public const int CONFIGLIST_Y = 24;
-		public const int CONFIGLIST_WIDTH = 228;
-		public const int CONFIGLIST_HEIGHT = 400;
+		public const string CONFIG_BG = IMAGE_FOLDER + "Storm1";
+		public const int	CONFIGLIST_X = 560;
+		public const int	CONFIGLIST_Y = 24;
+		public const int	CONFIGLIST_WIDTH = 228;
+		public const int	CONFIGLIST_HEIGHT = 400;
 
         //Config::Board
         public const string BOARD_EXTENSION = ".sky";
@@ -155,20 +157,27 @@ namespace Klotski.Utilities {
         public const int BOARD_LISTMENU_TOP = 55;
 
         //Config::HeroButton
-        public static readonly string[] HEROBUTTON_MENU = { "Klotski", "BFS", "DFS" };
-        public static readonly string[] HEROBUTTON_INFO = {"This is Dummy Text for Klotski"
-                                                          ,"This is Dummy Text for BFS"
-                                                          ,"This is Dummy Text for DFS"};
+        public static readonly string[] HEROBUTTON_MENU = { "Klotski", "DFS", "BFS" };
+        public static readonly string[] HEROBUTTON_INFO = {"Klotski is one of the Royal\r\n" +
+                                                           "Zeppelin crew who loves puzzle.\r\n" +
+                                                           "Can he save his king?",
+                                                           "The DFS group has created a lot\r\n" +
+                                                           "of AI for disaster handling. Saving\r\n" +
+                                                           "the king would ensure its future.",                                                           
+                                                           "BFS foundation operatives has met\r\n" +
+														   "all kind of disaster. It's time to\r\n" +
+														   "show the world their abilities."};
         public const string HEROBUTTON_TEXTURE = "Images/HeroButton";
         public const string HEROBUTTONOVERLAY_TEXTURE = "Images/HeroButtonOverlay";
-        public const string HEROBUTTON_FONT = FONT_FOLDER + "Tahoma";
+		public const string HEROBUTTON_FONT = FONT_FOLDER + "Tahoma";
+		public const string HEROBUTTON_DESCFONT = FONT_FOLDER + "Description";
         public const int HEROBUTTON_LEFT = 50;
         public const int HEROBUTTON_TOP = 50;
         public const int HEROBUTTON_SPACE = HEROBUTTON_HEIGHT + 24;
-        public const int HEROBUTTON_WIDTH = 370;
+        public const int HEROBUTTON_WIDTH = 400;
         public const int HEROBUTTON_HEIGHT = 150;
-        public const int HEROBUTTON_IMAGEWIDTH = 150;
-        public const int HEROBUTTON_IMAGEHEIGHT = 125;
+        public const int HEROBUTTON_IMAGEWIDTH = 115;
+        public const int HEROBUTTON_IMAGEHEIGHT = 115;
 
         //Config::MenuButton
         public static readonly string[] CONFIG_MENU = { "Back", "Go Save The King!" };
@@ -177,92 +186,8 @@ namespace Klotski.Utilities {
         public const int CONFIGBUTTON_SPACE = 40;
         public const int CONFIGBUTTON_WIDTH = 228;
 
-        //Init Editor
-        public static readonly string[] INITEDITOR_MENU = { "Cancel", "Be The Storm"};
-
-        public const int INITEDITORWINDOW_TOP = 350;
-        public const int INITEDITORWINDOW_LEFT = 300;
-        public const int INITEDITORWINDOW_WIDTH = 350;
-        public const int INITEDITORWINDOW_HEIGHT = 180;
-
-        public const int INITEDITOR_TOP = 485;
-        public const int INITEDITOR_LEFT = 410;
-        public const int INITEDITOR_SPACE = 25;
-        public const int INITEDITOR_WIDTH = 100;
-
-        public const int INITCOMBO_TOP = 423;
-        public const int INITCOMBO_LEFT = 390;
-        public const int INITCOMBO_SPACE = 25;
-        public const int INITCOMBO_WIDTH = 100;
-
-        public const int INITEDITORLABEL_TOP = 280;
-        public const int INITEDITORLABEL_LEFT = 325;
-        public const int INITEDITORLABEL_HEIGHT = 300;
-        public const int INITEDITORLABEL_WIDTH = 300;
-        public const string INITEDITORLABEL_TEXT =
-                "You can input your desired board tile space here.\r\n" +
-                "\r\n" +
-                "\r\n" +
-                "Height :\r\n" +
-                "\r\n" +
-                "Width  :\r\n";
-
-        //Editor
-        public const string EDITOR_BGM = "Editor.mp3";
-
-        //Editor Buttons
-        public static readonly string[] EDITORBUTTON_MENU = { "Baloon", "Zeppelin_H", "Zeppelin_V" };
-        public const int EDITORBUTTON_LEFT = APP_WIDTH - EDITORBUTTON_WIDTH - 10;
-        public const int EDITORBUTTON_TOP = BOARD_LISTMENU_TOP + 120;
-        public const int EDITORBUTTON_SPACE = 35;
-        public const int EDITORBUTTON_WIDTH = 100;
-
-        //Editor Menu
-        public static readonly string[] EDITOR_MENU = { "Back To Title", "Go Trap the King!" };
-        public const int EDITORMENU_LEFT = EDITORBUTTON_LEFT - 10;
-        public const int EDITORMENU_TOP = EDITORBUTTON_TOP + 115;
-        public const int EDITORMENU_SPACE = EDITORBUTTON_SPACE;
-        public const int EDITORMENU_WIDTH = EDITORBUTTON_WIDTH + 15;
-
-        //Editor GUI
-        public const int EDITORSIDEBARPANEL_TOP = EDITORBUTTON_TOP - 10;
-        public const int EDITORSIDEBARPANEL_WIDTH = EDITORBUTTON_WIDTH + 20;
-        public const int EDITORSIDEBARPANEL_HEIGHT = (3 * EDITORBUTTON_SPACE) + 10;
-        public const int EDITORSIDEBARPANEL_LEFT = APP_WIDTH - EDITORSIDEBARPANEL_WIDTH;
-
-        public const int EDITORSIDEBAR_TOP = EDITORSIDEBARPANEL_TOP - 10;
-        public const int EDITORSIDEBAR_WIDTH = EDITORSIDEBARPANEL_WIDTH + 20;
-        public const int EDITORSIDEBAR_HEIGHT = EDITORSIDEBARPANEL_HEIGHT + 90;
-        public const int EDITORSIDEBAR_LEFT = EDITORSIDEBARPANEL_LEFT - 10;
-
-        public const double EDITORLINE_LIMIT = -50.0f;
-
-        public const int EDITORWINDOW_TOP = 150;
-        public const int EDITORWINDOW_LEFT = 170;
-        public const int EDITORWINDOW_WIDTH = 450;
-        public const int EDITORWINDOW_HEIGHT = 235;
-
-        public const int EDITORHELP_TOP = 135;
-        public const int EDITORHELP_LEFT = 200;
-        public const int EDITORHELP_WIDTH = 390;
-        public const int EDITORHELP_HEIGHT = 280;
-        public const string EDITOR_HELP =
-            "This is Editor State's help.\r\n" +
-            "\r\n" +
-            "OBJECTIVE\r\n" +
-            "Design the winning state condition of the game.\r\n" +
-            "\r\n" +
-            "CONTROLS\r\n" +
-            "Press Tab to make this stupid window go away and back again.\r\n" +
-            "Press WSAD to move the camera.\r\n" +
-            "Click the button and click with LMB in the board to put the\r\n" +
-            "desired baloon.\r\n" +
-            "Click the ship with RMB to delete the ship from the board\r\n" +
-            "Press Go Trap the King! to go wreck the board.\r\n" +
-            "\r\n" +
-            "note : if nothing shows up, you're doing it wrong.";
-
 		//State game
+		public const string GAME_SKY			= TEXTURE_FOLDER + "GameSky";
 		public const float	GAMEGAP_WIDTH		= 10.0f;
 		public const float	GAMEGAP_HEIGHT		= 10.0f;
 		public const float	GAMETILE_WIDTH		= 40.0f;
@@ -289,13 +214,19 @@ namespace Klotski.Utilities {
 		public const int	LIFEBAR_Y = 32;
 		public const string LIFE_TEXTURE = "Images/Life";
 		public const string LIFEBAR_TEXTURE = "Images/LifeBar";
+		public const int	TIMER_X = 560;
+		public const int	TIMER_Y = 32;
+		public const string	TIMER_FONT = FONT_FOLDER + "Timer";
+		public const int	COUNTER_X = 24;
+		public const int	COUNTER_Y = 480;
+		public const string	COUNTER_FONT = FONT_FOLDER + "Step";
         
         //Ship
 	    public const float SHIPCAM_HEIGHT = 10.0f;
 	    public const float SHIPCAM_DISTANCE = 50.0f;
 
 		//Pause::MenuButton
-		public static readonly string[] PAUSE_MENU = { "Resume", "Restart", "To Title", "Exit" };
+		public static readonly string[] PAUSE_MENU = { "Resume", "To Title", "Exit", "Save Map" };
 		public const int                PAUSEBUTTON_LEFT = 470;
 		public const int                PAUSEBUTTON_TOP = 230;
 		public const int                PAUSEBUTTON_SPACE = 50;
@@ -322,7 +253,89 @@ namespace Klotski.Utilities {
 			"While in control of a balloon, you\r\n" +
 			"can move it with WASD buttons.";
 
-      
+		//Init Editor
+		public static readonly string[] INITEDITOR_MENU = { "Cancel", "OK" };
+
+		public const int INITEDITORWINDOW_TOP = 350;
+		public const int INITEDITORWINDOW_LEFT = 300;
+		public const int INITEDITORWINDOW_WIDTH = 350;
+		public const int INITEDITORWINDOW_HEIGHT = 180;
+
+		public const int INITEDITOR_TOP = 485;
+		public const int INITEDITOR_LEFT = 410;
+		public const int INITEDITOR_SPACE = 25;
+		public const int INITEDITOR_WIDTH = 100;
+
+		public const int INITCOMBO_TOP = 423;
+		public const int INITCOMBO_LEFT = 390;
+		public const int INITCOMBO_SPACE = 25;
+		public const int INITCOMBO_WIDTH = 100;
+
+		public const int INITEDITORLABEL_TOP = 280;
+		public const int INITEDITORLABEL_LEFT = 325;
+		public const int INITEDITORLABEL_HEIGHT = 300;
+		public const int INITEDITORLABEL_WIDTH = 300;
+		public const string INITEDITORLABEL_TEXT =
+                "You can input your desired board tile space here.\r\n" +
+				"\r\n" +
+				"\r\n" +
+				"Height :\r\n" +
+				"\r\n" +
+				"Width  :\r\n";
+		
+		//Editor
+		public const string EDITOR_SKY = TEXTURE_FOLDER + "EditorSky";
+		public const string EDITOR_BGM = "Editor.mp3";
+
+		//Editor Buttons
+		public static readonly string[] EDITORBUTTON_MENU = { "Baloon", "Heppelin", "Veppelin" };
+		public const int EDITORBUTTON_LEFT = APP_WIDTH - EDITORBUTTON_WIDTH - 10;
+		public const int EDITORBUTTON_TOP = BOARD_LISTMENU_TOP + 120;
+		public const int EDITORBUTTON_SPACE = 35;
+		public const int EDITORBUTTON_WIDTH = 100;
+
+		//Editor Menu
+		public static readonly string[] EDITOR_MENU = { "Back to Title", "Unleash Storm" };
+		public const int EDITORMENU_LEFT = EDITORBUTTON_LEFT - 10;
+		public const int EDITORMENU_TOP = EDITORBUTTON_TOP + 115;
+		public const int EDITORMENU_SPACE = EDITORBUTTON_SPACE;
+		public const int EDITORMENU_WIDTH = EDITORBUTTON_WIDTH + 15;
+
+		//Editor GUI
+		public const int EDITORSIDEBARPANEL_TOP = EDITORBUTTON_TOP - 10;
+		public const int EDITORSIDEBARPANEL_WIDTH = EDITORBUTTON_WIDTH + 20;
+		public const int EDITORSIDEBARPANEL_HEIGHT = (3 * EDITORBUTTON_SPACE) + 10;
+		public const int EDITORSIDEBARPANEL_LEFT = APP_WIDTH - EDITORSIDEBARPANEL_WIDTH;
+
+		public const int EDITORSIDEBAR_TOP = EDITORSIDEBARPANEL_TOP - 10;
+		public const int EDITORSIDEBAR_WIDTH = EDITORSIDEBARPANEL_WIDTH + 20;
+		public const int EDITORSIDEBAR_HEIGHT = EDITORSIDEBARPANEL_HEIGHT + 90;
+		public const int EDITORSIDEBAR_LEFT = EDITORSIDEBARPANEL_LEFT - 10;
+
+		public const double EDITORLINE_LIMIT = -50.0f;
+
+		public const int EDITORWINDOW_TOP = 150;
+		public const int EDITORWINDOW_LEFT = 170;
+		public const int EDITORWINDOW_WIDTH = 450;
+		public const int EDITORWINDOW_HEIGHT = 235;
+
+		public const int EDITORHELP_TOP = 135;
+		public const int EDITORHELP_LEFT = 200;
+		public const int EDITORHELP_WIDTH = 390;
+		public const int EDITORHELP_HEIGHT = 280;
+		public const string EDITOR_HELP =
+			"STORM CREATION\r\n" +
+			"Creates a formation of balloons that will be the victim\r\n" +
+			"of the storm.\r\n" +
+			"\r\n" +
+			"CONTROLS\r\n" +
+			"Press WSAD to move the camera.\r\n" +
+			"Press Tab to toggle this help window on and off.\r\n" +
+			"Click the buttons on the right to choose which baloon to place.\r\n" +
+			"Use the left mouse button to place the ship on the sky.\r\n" +
+			"Use the right mouse button to remove a ship.\r\n" +
+			"\r\n" +
+			"Modify the formation further by unleashing the storm.\r\n";
 
 	    //Error & Exceptions
 		public const string ERROR_MSGBOX_TITLE	= "Application has encountered an error!";
