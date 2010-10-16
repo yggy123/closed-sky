@@ -65,7 +65,7 @@ namespace Klotski.States {
 					FlatRedBallServices.GlobalContentManager);
 
 				//Load texts
-				Text Time = TextManager.AddText(m_Time.TotalSeconds.ToString(), m_Layer);
+				Text Time = TextManager.AddText(m_Time.Seconds.ToString(), m_Layer);
 				Text Step = TextManager.AddText(m_Step.ToString(), m_Layer);
 				Step.Font = BmpFont;
 				Time.Font = BmpFont;
