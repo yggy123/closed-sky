@@ -65,7 +65,7 @@ namespace Klotski.States {
 					FlatRedBallServices.GlobalContentManager);
 
 				//Load texts
-				Text Time = TextManager.AddText(m_Time.Seconds.ToString(), m_Layer);
+				Text Time = TextManager.AddText(m_Time.TotalSeconds.ToString(), m_Layer);
 				Text Step = TextManager.AddText(m_Step.ToString(), m_Layer);
 				Step.Font = BmpFont;
 				Time.Font = BmpFont;
@@ -88,7 +88,7 @@ namespace Klotski.States {
 				}
 
 				//Load ranks
-				int ranking = 0;
+				int ranking = 1;
 				Sprite Rank = null;
 				if (m_Time.Seconds < 600)  ranking = 0;
 				if (m_Time.Seconds > 1800) ranking = 2;
